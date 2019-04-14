@@ -11,6 +11,9 @@ let resGearName = (name) => `Generate ${name}?`;
 let resTypeTracksCountToGenerate = (total) => `Type the number of tracks to generate / ${total}`;
 let resTypeTracksCount = "#tracks";
 
+let resSortPlaylist = "Sort active playlist"
+let resSortName = (name) => `Are you sure you want to sort ${name}?`;
+
 let resMaxByArtist = "Max title by artist (empty = not limited)";
 let resTypeMaxByArtist = "#max artist";
 
@@ -23,11 +26,14 @@ let observerPlaylistMenu;
 
 let logoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction", "Idols", "J-Music", "Retro Gaming", "Christmas", "Roleplay"];
 
+let logoTags = ["[NLN]", "[NLJ]", "[NLO]", "[NLVG]", "[NLIN]", "[NLF]", "[NLID]", "[NLJM]", "[NLRG]", "[NLC]", "[NLRP]"];
+
 const logoEdges   = ["#555555", "#FF6E6E", "#AAAAAA", "#96C2D0",    "#FBE170", "#C7A8CA", "#FDBFFB", "#FF6E6E", "#A6C19E",      "#A6C19E",   "#96C2D0"];
 const logoLetters = ["#AAAAAA", "#FFFFFF", "#FFFFFF", "#498BC3",    "#F2C10C", "#946BA8", "#FA92F9", "#F20A0E", "#698F5C",      "#F20A0E",   "#FFFFFF"];
 const maxPlaylist = 200;
 
 let logoIndex = 0;
+let previousLogoIndex = logoIndex;
 let logoTimer;
 let clipBoard = { id: null, cut: false, medias: []};
 
@@ -44,6 +50,9 @@ function language_fr()
   resGearName = (name) => `Générer ${name} ?`;
   resTypeTracksCountToGenerate = (total) => `Tapez le nombre de pistes à générer / ${total}`;
   resTypeTracksCount = "Nb pistes";
+
+  resSortPlaylist = "Trier liste active"
+  resSortName = (name) => `Êtes vous sûr(e) de vouloir trier ${name} ?`;
 
   resMaxByArtist = "Max titre par artiste (vide = non limité)";
   resTypeMaxByArtist = "Max artist";
@@ -69,6 +78,7 @@ function createAll()
   createUserLogoBouncer();
   createObservers();
   if (logoIndex > 0) logoNolifeTimerEvent();
+  API.on(API.ADVANCE, advance);
 }
 
 function createCSS()
@@ -164,6 +174,7 @@ function createUserLogoBouncer()
     popover.find('li').click(function()
     {
       logoIndex = $(this).index();
+      previousLogoIndex = logoIndex;
       logoNolifeTimerEvent();
       $(".user-logo svg path").attr('style', 'fill:' + logoLetters[logoIndex]).eq(0).attr('style', 'fill:' + logoEdges[logoIndex]);
     });
@@ -251,7 +262,6 @@ function gearDialog(playlists, id, name, count, total)
     {
       if ($("#dialog-playlist-delete").hasClass("no-submit") == false)
       {
-        //console.log("gear");
         gear(playlists, id, count, parseInt($("#dialog-playlist-delete input[name=max-tracks]").val()), $("#dialog-playlist-delete #dropdownAppendMode dd .row.selected").attr("data-value"), parseInt($("#dialog-playlist-delete input[name=max-by-artist]").val()), true, true);
       }
       else
@@ -406,31 +416,76 @@ function createClearButton()
 {
   createPlaylistButton("clear", "eraser", function()
   {
-    let activePlaylist = getActivePlaylist();
-    if (activePlaylist != undefined)
+    let visiblePlaylist = getVisiblePlaylist();
+    if (visiblePlaylist != undefined)
     {
-      clearDialog(activePlaylist.attributes.id, activePlaylist.attributes.name);
+      clearDialog(visiblePlaylist.attributes.id, visiblePlaylist.attributes.name);
     }
   });
 }
 
 async function sort(id)
 {
-  let playlist = await fetchPlaylist(id);
-  await playlist.sort((element1, element2) => (element1.author == element2.author) ? element1.title.localeCompare(element2.title) : element1.author.localeCompare(element2.author));
-  let data = await movePlaylist(id, playlist, -1);
+  //let playlist = await fetchPlaylist(id);
+  //await playlist.sort((element1, element2) => (element1.author == element2.author) ? element1.title.localeCompare(element2.title) : element1.author.localeCompare(element2.author));
+  //let data = await movePlaylist(id, playlist, -1);
+
+  let medias = getVisiblePlaylistMedias();
+  medias.sort((element1, element2) => (element1.attributes.author == element2.attributes.author) ? element1.attributes.title.localeCompare(element2.attributes.title) : element1.attributes.author.localeCompare(element2.attributes.author));
+  let data = await movePlaylist(id, medias, -1);
   let count = await data.length;
   await refreshPlaylist(id, count);
+}
+
+function sortDialog(id, name)
+{
+  $("#dialog-container").html(`<div id="dialog-confirm" class="dialog destructive"><div class="dialog-frame"><span class="title">${resSortPlaylist}</span><i class="icon icon-dialog-close"></i></div><div class="dialog-body"><span class="message" style="top: 63.5px;">${resSortName(name)}</span></div><div class="dialog-frame"><div class="button cancel"><span>${resCancel}</span></div><div class="button submit"><span>${resSortPlaylist}</span></div></div></div>`).css("display", "block").click(function(event)
+  {
+    let cid = $(event.target).prop('id');
+    if (cid == "")
+    {
+      cid = $(event.target).prop('class');
+      if (cid == "")
+      {
+        cid = $(event.target).parent().prop('class');
+      }
+    }
+
+    if (cid == "button submit")
+    {
+      if ($("#dialog-confirm").hasClass("no-submit") == false)
+      {
+        sort(id);
+      }
+      else
+      {
+        cid = "";
+      }
+    }
+    
+    if (["dialog-container", "icon icon-dialog-close", "button submit", "button cancel"].includes(cid))
+    {
+      $(this).html('').css("display", "none");
+      $(this).unbind(event);
+    }
+  });
 }
 
 function createSortButton()
 {
   createPlaylistButton("sort", "sort-alpha-asc", function()
   {
-    let activePlaylist = getActivePlaylist();
-    if (activePlaylist != undefined)
+    let visiblePlaylist = getVisiblePlaylist();
+    if (visiblePlaylist != undefined)
     {
-      sort(activePlaylist.attributes.id);
+      if (visiblePlaylist.attributes.active)
+      {
+        sortDialog(visiblePlaylist.attributes.id, visiblePlaylist.attributes.name);
+      }
+      else
+      {
+        sort(visiblePlaylist.attributes.id);
+      }
     }
   });
 }
@@ -439,10 +494,10 @@ function createRefreshButton()
 {
   createPlaylistButton("refresh", "refresh", function()
   {
-    let activePlaylist = getActivePlaylist();
-    if (activePlaylist != undefined)
+    let visiblePlaylist = getVisiblePlaylist();
+    if (visiblePlaylist != undefined)
     {
-      refreshPlaylist(activePlaylist.attributes.id);
+      refreshPlaylist(visiblePlaylist.attributes.id);
     }
   });
 }
@@ -451,14 +506,14 @@ async function paste()
 {
   if (clipBoard.id && clipBoard.medias.length > 0)
   {
-    let activePlaylist = getActivePlaylist();
-    if (activePlaylist != undefined)
+    let visiblePlaylist = getVisiblePlaylist();
+    if (visiblePlaylist != undefined)
     {
-      let id = activePlaylist.attributes.id;
+      let id = visiblePlaylist.attributes.id;
       let data = await insertPlaylist(id, clipBoard.medias, false);
       let count = await data[0].count;
       await refreshPlaylist(id, count);
-      
+
       if ((clipBoard.cut) && (id != clipBoard.id))
       {
         let data = await fetchPlaylist(id);
@@ -475,8 +530,8 @@ async function paste()
 function copyCut(cut)
 {
   clipBoard.cut = cut;
-  clipBoard.id = getActivePlaylist().attributes.id;
-  clipBoard.medias = getActivePlaylistMedias().filter(element => element.attributes.checked); //.map(element => {id: element.attributes.id});
+  clipBoard.id = getVisiblePlaylist().attributes.id;
+  clipBoard.medias = getVisiblePlaylistMedias().filter(element => element.attributes.checked);
 }
 
 function createCutCopyPasteButton()
@@ -527,7 +582,7 @@ function createPlaylistsCheckboxes()
 
 function createMediasCheckboxes()
 {
-  let medias = getActivePlaylistMedias();
+  let medias = getVisiblePlaylistMedias();
   let rows = $("#media-panel .row");
   let offsetIndex = 0;
   let lastIndex = rows.length - 1;
@@ -568,7 +623,7 @@ function createMediasCheckboxes()
       checkbox.click(function(event)
       {
         $(this).toggleClass("selected");
-        let medias = getActivePlaylistMedias();
+        let medias = getVisiblePlaylistMedias();
         medias[mediaIndex].attributes.checked = $(this).hasClass("selected");
         event.stopPropagation();
       }).mouseup(function(event)
@@ -795,7 +850,7 @@ async function deletePlaylist(id, medias)
 
 async function clearPlaylist(id)
 {
-  return await deletePlaylist(id, getActivePlaylistMedias());
+  return await deletePlaylist(id, getVisiblePlaylistMedias());
 }
 
 async function fetchMyHistory()
@@ -821,7 +876,7 @@ async function getCids(myHistory, history)
   return await cids;
 }
 
-function getActivePlaylistMedias()
+function getVisiblePlaylistMedias()
 {
   return _.find(require.s.contexts._.defined, m => m && m instanceof Backbone.Collection && m._events && m._events["change:author"]).models;
 }
@@ -831,14 +886,47 @@ function getPlaylists()
   return _.find(require.s.contexts._.defined, m => m && m instanceof Backbone.Collection && typeof m.jumpToMedia === 'function').models;
 }
 
-function getActivePlaylist()
+function getVisiblePlaylist()
 {
-  return  getPlaylists().find(element => element.attributes.visible == true);
+  return getPlaylists().find(element => element.attributes.visible == true);
 }
 
 function iconNolife(logoIndex, style, width, height)
 {
   return `<svg width="${width}" height="${height}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ${style}><g transform="scale(${width / 320.0})"><path style="fill:${logoEdges[logoIndex]}" d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A22,22,0,0,1,190,0 L239,0 A22,22,0,0,1,261,22L261,100 L298,100 A22,22,0,0,1,319,124 L319,170 L320,227 A22,22,0,0,1,298,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L304 215 L287,173 Z"></path><path style="fill:${logoLetters[logoIndex]};" d="M 85,185 L287,173 L304 215 L102,227 Z M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M189,26 L232,25 L234,117 A7,7,0,0,0,241,124 L295,123 L296,155 L228,156 A37,37,0,0,1,192,119Z"></path></g></svg>`;
+}
+
+function advance()
+{
+  let nextLogoIndex = previousLogoIndex;
+  let media = API.getMedia();
+  if (media)
+  {
+    let title = media.author + " - " + media.title;
+    for(let i = 0; i < logoTags.length; i++)
+    {
+      let tag = logoTags[i];
+      if (title.includes(tag))
+      {
+        removeTag(tag);
+        nextLogoIndex = i;
+        break;
+      }
+    }
+  }
+  if (nextLogoIndex != logoIndex)
+  {
+    logoIndex = nextLogoIndex;
+    logoNolifeTimerEvent();
+  }
+}
+
+function removeTag(tag)
+{
+  $(".community__song-playing").each(function(index, element)
+  {
+    $(this).html($(this).html().replace(tag, ""));
+  });
 }
 
 function logoNolifeTimerEvent()
