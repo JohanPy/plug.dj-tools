@@ -23,17 +23,19 @@ let resOverwrite = "Overwrite playlist";
 
 let observerMediaPanel;
 let observerPlaylistMenu;
+let observerApp;
 
 let logoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction", "Idols", "J-Music", "Retro Gaming", "Christmas", "Roleplay"];
 
 let logoTags = ["[NLN]", "[NLJ]", "[NLO]", "[NLVG]", "[NLIN]", "[NLF]", "[NLID]", "[NLJM]", "[NLRG]", "[NLC]", "[NLRP]"];
 
-const logoEdges   = ["#555555", "#FF6E6E", "#AAAAAA", "#96C2D0",    "#FBE170", "#C7A8CA", "#FDBFFB", "#FF6E6E", "#A6C19E",      "#A6C19E",   "#96C2D0"];
-const logoLetters = ["#AAAAAA", "#FFFFFF", "#FFFFFF", "#498BC3",    "#F2C10C", "#946BA8", "#FA92F9", "#F20A0E", "#698F5C",      "#F20A0E",   "#FFFFFF"];
+const logoEdges   = ["#555555", "#FF6E6E", "#AAAAAA", "#96C2D0", "#FBE170", "#C7A8CA", "#FDBFFB", "#FF6E6E", "#A6C19E", "#A6C19E", "#96C2D0"];
+const logoLetters = ["#AAAAAA", "#FFFFFF", "#FFFFFF", "#498BC3", "#F2C10C", "#946BA8", "#FA92F9", "#F20A0E", "#698F5C", "#F20A0E", "#FFFFFF"];
 const maxPlaylist = 200;
 
 let logoIndex = 0;
 let previousLogoIndex = logoIndex;
+let logoChanged = false;
 let logoTimer;
 let clipBoard = { id: null, cut: false, medias: []};
 
@@ -95,6 +97,7 @@ function install()
   let playlistMenu = document.getElementById("playlist-menu") != null;
   let mediaPanel = document.getElementById("media-panel") != null;
   let userProfile = false;
+  let app = document.getElementById("app") != null;
   if (playlistMenu && mediaPanel)
   {
     createAll();
@@ -112,17 +115,25 @@ function install()
           {
             playlistMenu = true;
             mediaPanel = document.getElementById("media-panel") != null;
+            app = document.getElementById("app") != null;
           }
           else if (mutation.target.id == "media-panel")
           {
             playlistMenu = document.getElementById("playlist-menu") != null;
             mediaPanel = true;
+            app = document.getElementById("app") != null;
+          }
+          else if (mutation.target.id == "app")
+          {
+            playlistMenu = document.getElementById("playlist-menu") != null;
+            mediaPanel = true;
+            app = true;
           }
           if (mutation.target.className == "user-profile")
           {
             userProfile = true;
           }
-          if (playlistMenu && mediaPanel && userProfile)
+          if (playlistMenu && mediaPanel && userProfile && app)
           {
             createAll();
             observer.disconnect();
@@ -145,6 +156,11 @@ function createPlaylistButtons()
   createSortButton();
   createRefreshButton();
   createCutCopyPasteButton();
+}
+
+function closeUserLogoPopup()
+{
+  $(".user-logo-dropdown").parent().attr("data-state", "hidden").removeClass("user-profile-dropdown");
 }
 
 function createUserLogoBouncer()
@@ -174,16 +190,16 @@ function createUserLogoBouncer()
     popover.find('li').click(function()
     {
       logoIndex = $(this).index();
-      previousLogoIndex = logoIndex;
-      logoNolifeTimerEvent();
-      $(".user-logo svg path").attr('style', 'fill:' + logoLetters[logoIndex]).eq(0).attr('style', 'fill:' + logoEdges[logoIndex]);
+      changeLogo();
+      logoChanged = true;
+      closeUserLogoPopup();
+    }).mousedown(function(event)
+    {
+      event.stopPropagation();
     });
     $('.popover').filter(":last").after(popover);
     
-    $(document).mousedown(function()
-    {
-      $(".user-logo-dropdown").parent().attr("data-state", "hidden").removeClass("user-profile-dropdown");
-    });
+    $(document).mousedown(closeUserLogoPopup);
   }
 }
 
@@ -199,7 +215,7 @@ function createPlaylistButton(id, fa, click)
 
 async function gear(playlists, id, initialCount, max, appendMode, maxArtist, checkMyHistory, checkHistory)
 {
-  cids = await getCids(checkMyHistory, checkHistory);
+  let cids = getCids(checkMyHistory, checkHistory);
   let finalCount;
   if (appendMode == "overwrite")
   {
@@ -426,10 +442,6 @@ function createClearButton()
 
 async function sort(id)
 {
-  //let playlist = await fetchPlaylist(id);
-  //await playlist.sort((element1, element2) => (element1.author == element2.author) ? element1.title.localeCompare(element2.title) : element1.author.localeCompare(element2.author));
-  //let data = await movePlaylist(id, playlist, -1);
-
   let medias = getVisiblePlaylistMedias();
   medias.sort((element1, element2) => (element1.attributes.author == element2.attributes.author) ? element1.attributes.title.localeCompare(element2.attributes.title) : element1.attributes.author.localeCompare(element2.attributes.author));
   let data = await movePlaylist(id, medias, -1);
@@ -684,12 +696,32 @@ function createObservers()
     observerPlaylistMenu = new MutationObserver(playlistMenuCallback);
     observerPlaylistMenu.observe(playlistMenu, playlistMenuConfig);
   }
+
+  if (observerApp == null)
+  {
+    let app = document.getElementById('app');
+    let appConfig = { attributes: true, childList: false, subtree: false };
+    let appCallback = function(mutationsList, observer)
+    {
+      for(let mutation of mutationsList)
+      {
+        if ((mutation.type == 'attributes') && (mutation.attributeName == 'data-theme'))
+        {
+          enterRoom(app.getAttribute(mutation.attributeName));
+          break;
+        }
+      }
+    };
+    observerApp = new MutationObserver(appCallback);
+    observerApp.observe(app, appConfig);
+  }
 }
 
 function uninstall()
 {
   observerMediaPanel.disconnect();
   observerPlaylistMenu.disconnect();
+  observerApp.disconnect();
 }
 
 function refreshPlaylist(id, count)
@@ -724,7 +756,11 @@ function getRandomInt(max)
 
 function shuffle(array)
 {
-  array.sort(() => Math.random() - 0.5);
+  for (let i = array.length - 1; i > 0; i--)
+  {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
 function getPlaylistsIndexes(playlists)
@@ -853,32 +889,28 @@ async function clearPlaylist(id)
   return await deletePlaylist(id, getVisiblePlaylistMedias());
 }
 
-async function fetchMyHistory()
-{
-  const response = await fetch('/_/users/me/history');
-  const json = await response.json();
-  return await json.data;
-}
-
-async function getCids(myHistory, history)
+function getCids(myHistory, history)
 {
   let cids = [];
   if (myHistory)
   {
-    let data = await fetchMyHistory();
-    cids = await data.map(element => element.media.cid);
+    cids = getMyHistory().map(element => element.attributes.media.attributes.cid);
   }
-  
   if (history)
   {
-    cids = await cids.concat(API.getHistory().map(element => element.media.cid));
+    cids = cids.concat(API.getHistory().map(element => element.media.cid));
   }
-  return await cids;
+  return cids;
 }
 
 function getVisiblePlaylistMedias()
 {
   return _.find(require.s.contexts._.defined, m => m && m instanceof Backbone.Collection && m._events && m._events["change:author"]).models;
+}
+
+function getMyHistory()
+{
+  return _.find(require.s.contexts._.defined, m => m && m instanceof Backbone.Collection && m._events == undefined && typeof m.model === "function" && m.model.prototype.defaults.hasOwnProperty("room")).models;
 }
 
 function getPlaylists()
@@ -902,15 +934,22 @@ function advance()
   let media = API.getMedia();
   if (media)
   {
-    let title = media.author + " - " + media.title;
-    for(let i = 0; i < logoTags.length; i++)
+    if (media.author.trim() == "[Nolife]")
     {
-      let tag = logoTags[i];
-      if (title.includes(tag))
+      nextLogoIndex = 0;
+    }
+    else
+    {
+      let title = media.author + " - " + media.title;
+      for(let i = 0; i < logoTags.length; i++)
       {
-        removeTag(tag);
-        nextLogoIndex = i;
-        break;
+        let tag = logoTags[i];
+        if (title.includes(tag))
+        {
+          removeTag(tag);
+          nextLogoIndex = i;
+          break;
+        }
       }
     }
   }
@@ -921,12 +960,37 @@ function advance()
   }
 }
 
+function enterRoom(room)
+{
+  if (!logoChanged)
+  {
+    if ((room == "nolife-tv") && (logoIndex != 7))
+    {
+      logoIndex = 7;
+      changeLogo();
+    }
+    else if (logoIndex != 0)
+    {
+      logoIndex = 0;
+      changeLogo();
+    }
+  }
+  advance();
+}
+
 function removeTag(tag)
 {
   $(".community__song-playing").each(function(index, element)
   {
     $(this).html($(this).html().replace(tag, ""));
   });
+}
+
+function changeLogo()
+{
+  previousLogoIndex = logoIndex;
+  logoNolifeTimerEvent();
+  $(".user-logo svg path").attr('style', 'fill:' + logoLetters[logoIndex]).eq(0).attr('style', 'fill:' + logoEdges[logoIndex]);
 }
 
 function logoNolifeTimerEvent()
@@ -963,14 +1027,14 @@ function logoNolifeTimerEvent()
     if (frameHeight <= ytFrame.height())
     {
       top = frameHeight * 0.07407407 + (ytFrame.height() - frameHeight) / 2;
-      left = frameWidth * 0.0885416;
+      left = frameWidth * 0.09479578;
     }
     else
     {
       frameHeight = ytFrame.height();
       frameWidth = frameHeight * 16 / 9;
       top = frameHeight * 0.07407407;
-      left = frameWidth * 0.0885416 + (ytFrame.width() - frameWidth) / 2;
+      left = frameWidth * 0.09479578 + (ytFrame.width() - frameWidth) / 2;
     }
     let width = frameWidth * 0.1281250;
     let height = width / 3.0;
