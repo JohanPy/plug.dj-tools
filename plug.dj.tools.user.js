@@ -15,7 +15,7 @@ script.text = "if (typeof plugDJToolsExtensionUninstall == 'function') plugDJToo
 script.remove();
 
 script = document.createElement('script');
-script.src = chrome.runtime.getURL('https://copperfr.github.io/plug.dj-tools/tools.js');
+script.src = 'https://copperfr.github.io/plug.dj-tools/tools.js';
 script.onload = function()
 {
   this.remove();
