@@ -1,4 +1,4 @@
-(function() {
+var plugDJToolsExtensionUninstall = (function() {
 let resCancel = "Cancel";
 
 let resClearPlaylist = "Clear playlist"
@@ -21,14 +21,15 @@ let resBeginning = "Add on top";
 let resEnd = "Append";
 let resOverwrite = "Overwrite playlist";
 
+let resLogoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction", "Idols", "J-Music", "Retro Gaming", "Christmas", "Roleplay"];
+
 let observerMediaPanel;
 let observerPlaylistMenu;
 let observerApp;
 
-let logoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction", "Idols", "J-Music", "Retro Gaming", "Christmas", "Roleplay"];
-
 let logoTags = ["[NLN]", "[NLJ]", "[NLO]", "[NLVG]", "[NLIN]", "[NLF]", "[NLID]", "[NLJM]", "[NLRG]", "[NLC]", "[NLRP]"];
 
+const version = "1.2.1";
 const logoEdges   = ["#555555", "#FF6E6E", "#AAAAAA", "#96C2D0", "#FBE170", "#C7A8CA", "#FDBFFB", "#FF6E6E", "#A6C19E", "#A6C19E", "#96C2D0"];
 const logoLetters = ["#AAAAAA", "#FFFFFF", "#FFFFFF", "#498BC3", "#F2C10C", "#946BA8", "#FA92F9", "#F20A0E", "#698F5C", "#F20A0E", "#FFFFFF"];
 const maxPlaylist = 200;
@@ -63,7 +64,7 @@ function language_fr()
   resEnd = "Ajouter à la fin";
   resOverwrite = "Ecraser la liste";
 
-  logoTitles  = ["Aucun", "Japon", "Autre", "Jeu vidéo", "Indies", "Fiction", "Idols", "J-Music", "Rétro Gaming", "Noël", "Jeu de rôle"];
+  resLogoTitles  = ["Aucun", "Japon", "Autre", "Jeu vidéo", "Indies", "Fiction", "Idols", "J-Music", "Rétro Gaming", "Noël", "Jeu de rôle"];
 }
 
 function createAll()
@@ -81,6 +82,7 @@ function createAll()
   createObservers();
   if (logoIndex > 0) logoNolifeTimerEvent();
   API.on(API.ADVANCE, advance);
+  enterRoom(document.getElementById("app").getAttribute("data-theme"));
 }
 
 function createCSS()
@@ -94,11 +96,12 @@ function createCSS()
 
 function install()
 {
+  console.log(`plug.dj tools v${version}`);
   let playlistMenu = document.getElementById("playlist-menu") != null;
   let mediaPanel = document.getElementById("media-panel") != null;
-  let userProfile = false;
+  let userProfile = document.getElementsByClassName("user-profile").length > 0;
   let app = document.getElementById("app") != null;
-  if (playlistMenu && mediaPanel)
+  if (playlistMenu && mediaPanel && userProfile && app)
   {
     createAll();
   }
@@ -111,32 +114,17 @@ function install()
       {
         if (mutation.type == 'childList')
         {
-          if (mutation.target.id == "playlist-menu")
+          if ((mutation.target.id == "playlist-menu") || (mutation.target.id == "media-panel") || (mutation.target.id == "app") || (mutation.target.className == "user-profile"))
           {
-            playlistMenu = true;
-            mediaPanel = document.getElementById("media-panel") != null;
-            app = document.getElementById("app") != null;
-          }
-          else if (mutation.target.id == "media-panel")
-          {
-            playlistMenu = document.getElementById("playlist-menu") != null;
-            mediaPanel = true;
-            app = document.getElementById("app") != null;
-          }
-          else if (mutation.target.id == "app")
-          {
-            playlistMenu = document.getElementById("playlist-menu") != null;
-            mediaPanel = true;
-            app = true;
-          }
-          if (mutation.target.className == "user-profile")
-          {
-            userProfile = true;
+            playlistMenu = playlistMenu || (mutation.target.id == "playlist-menu") || (document.getElementById("playlist-menu") != null);
+            mediaPanel = mediaPanel || (mutation.target.id == "media-panel") || (document.getElementById("media-panel") != null);
+            app = app || (mutation.target.id == "app") || (document.getElementById("app") != null);
+            userProfile = userProfile || (mutation.target.className == "user-profile") || (document.getElementsByClassName("user-profile").length > 0);
           }
           if (playlistMenu && mediaPanel && userProfile && app)
           {
-            createAll();
             observer.disconnect();
+            createAll();
             break;
           }
         }
@@ -183,7 +171,7 @@ function createUserLogoBouncer()
     let popover = '<div class="popover" data-state="hidden"><div class="user-logo-dropdown"><ul class="list-unstyled">';
     for(let i = 0; i < logoEdges.length; i++)
     {
-      popover += '<li class="user-profile-dropdown__item user-action">' + iconNolife(i, "", 20, 16) + '<span class="user-profile-dropdown__item-text">' + logoTitles[i] + '</span></li>';
+      popover += '<li class="user-profile-dropdown__item user-action">' + iconNolife(i, "", 20, 16) + '<span class="user-profile-dropdown__item-text">' + resLogoTitles[i] + '</span></li>';
     }
     popover += '</ul></div></div>';
     popover = $(popover);
@@ -717,13 +705,6 @@ function createObservers()
   }
 }
 
-function uninstall()
-{
-  observerMediaPanel.disconnect();
-  observerPlaylistMenu.disconnect();
-  observerApp.disconnect();
-}
-
 function refreshPlaylist(id, count)
 {
   let rows = $("#playlist-menu .menu .container .row");
@@ -1016,10 +997,30 @@ function logoNolifeTimerEvent()
     {
       return;
     }
+    let layerNolife;
     let p2 = 1.0 - p1;
     if (logoNolife.length == 0)
     {
-      ytFrame.before('<svg id="logo-nolife" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="position: absolute; z-index: 10"><g><path d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A62,62,0,0,1,218,0 L271,0 A62,62,0,0,1,312,16 A22,22,0,0,1,333,0 L382,0 A22,22,0,0,1,404,22 L404,100 L440,100 L440,22 A22,22,0,0,1,462,0 L509,0 A22,22,0,0,1,530,15 A62,26,0,0,1,571,0 L635,0 A37,37,0,0,1,661,12 A62,62,0,0,1,697,0 L767,0 A22,22,0,0,1,789,22 L789,61 A22,22,0,0,1,778,81 L778,105 A22,22,0,0,1,789,124 L789,170 L800,227 A22,22,0,0,1,778,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L774 215 L757,173 Z"></path><path d=""></path><path d="M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M176,65 A37,37,0,0,1,213,28 L269,27 A37,37,0,0,1,306,64 L307,121 A37,37,0,0,1,270,158 L214,159 A37,37,0,0,1,177,122 Z M227,60 A7,7,0,0,0,220,67 L220 120 A7,7,0,0,0,227,127 L256,126 A7,7,0,0,0,263,119 L262,66 A7,7,0,0,0,255,59 Z M332,26 L375,25 L377,117 A7,7,0,0,0,384,124 L438,123 L439,155 L371,156 A37,37,0,0,1,334,119Z M463,24 L503,23 L505,153 L465,154 Z M530,59 A37,37,0,0,1,567,22 L633,21 L634,52 L580,53 A7,7,0,0,0,573,60 L573,71 L623,70 L624,102 L574,103 L575,152 L531,153Z M656,57 A37,37,0,0,1,693,20 L760,19 L761,50 L706,51 A7,7,0,0,0,699,58 L699,69 L749,68 L750,99 L700,100 L700,111 A7,7,0,0,0,707,118 L761,117 L762,149 L694,150 A37,37,0,0,1,657,113 Z"></path></g></svg>');
+      $(".community__playing-controls").css("pointer-events", "none");
+      $(".community__playing-top-buttons").css("pointer-events", "auto");
+
+      logoNolife = $('<svg id="logo-nolife" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="cursor: pointer; position: absolute; z-index: 10"><g><path d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A62,62,0,0,1,218,0 L271,0 A62,62,0,0,1,312,16 A22,22,0,0,1,333,0 L382,0 A22,22,0,0,1,404,22 L404,100 L440,100 L440,22 A22,22,0,0,1,462,0 L509,0 A22,22,0,0,1,530,15 A62,26,0,0,1,571,0 L635,0 A37,37,0,0,1,661,12 A62,62,0,0,1,697,0 L767,0 A22,22,0,0,1,789,22 L789,61 A22,22,0,0,1,778,81 L778,105 A22,22,0,0,1,789,124 L789,170 L800,227 A22,22,0,0,1,778,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L774 215 L757,173 Z"></path><path d=""></path><path d="M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M176,65 A37,37,0,0,1,213,28 L269,27 A37,37,0,0,1,306,64 L307,121 A37,37,0,0,1,270,158 L214,159 A37,37,0,0,1,177,122 Z M227,60 A7,7,0,0,0,220,67 L220 120 A7,7,0,0,0,227,127 L256,126 A7,7,0,0,0,263,119 L262,66 A7,7,0,0,0,255,59 Z M332,26 L375,25 L377,117 A7,7,0,0,0,384,124 L438,123 L439,155 L371,156 A37,37,0,0,1,334,119Z M463,24 L503,23 L505,153 L465,154 Z M530,59 A37,37,0,0,1,567,22 L633,21 L634,52 L580,53 A7,7,0,0,0,573,60 L573,71 L623,70 L624,102 L574,103 L575,152 L531,153Z M656,57 A37,37,0,0,1,693,20 L760,19 L761,50 L706,51 A7,7,0,0,0,699,58 L699,69 L749,68 L750,99 L700,100 L700,111 A7,7,0,0,0,707,118 L761,117 L762,149 L694,150 A37,37,0,0,1,657,113 Z"></path></g></svg>');
+      logoNolife.dblclick(function(event)
+      {
+        if (document.fullscreenElement)
+        {
+          document.exitFullscreen();
+        }
+        else
+        {
+          $(this).parent().get(0).requestFullscreen();
+        }
+      });
+      ytFrame.before(logoNolife);
+    }
+    else
+    {
+      layerNolife = $("#logo-nolife-layer");
     }
     let frameWidth = ytFrame.width();
     let frameHeight = frameWidth * 9 / 16;
@@ -1040,16 +1041,12 @@ function logoNolifeTimerEvent()
     let height = width / 3.0;
     
     let scale = width / 900.0;
-    
-    logoNolife.attr('width', Math.floor(width));
-    logoNolife.attr('height', Math.floor(height));
-    logoNolife.find('g').attr('transform', `scale(${scale})`);
-    logoNolife.css('left', Math.floor(left) + 'px').css('top', Math.floor(top) + 'px');
+
+    logoNolife.css('left', Math.floor(left) + 'px').css('top', Math.floor(top) + 'px').attr('width', Math.floor(width)).attr('height', Math.floor(height)).find('g').attr('transform', `scale(${scale})`);
     let path = logoNolife.find('path');
     path.first().attr('style', 'fill:' + logoEdges[logoIndex]).attr("fill-opacity", "0.4");
     path.eq(1).attr('d', `M 85,185 L${757 * p1 + 85 * p2},${173 * p1 + 185 * p2} L${774 * p1 + 102 * p2},${215 * p1 + 227 * p2} L102,227 Z`);
     path.filter(index => index > 0).attr('style', 'fill:' + logoLetters[logoIndex]).attr("fill-opacity", "0.9");
-
   }
   else
   {
@@ -1061,7 +1058,28 @@ function logoNolifeTimerEvent()
     if (logoNolife.length != 0)
     {
       logoNolife.remove();
+      $(".community__playing-controls").css("pointer-events", "auto");
     }
   }
 }
+
+let uninstall = function ()
+{
+  console.log(`Uninstalling plug.dj tools v${version}...`);
+  observerMediaPanel.disconnect();
+  observerMediaPanel = null;
+  observerPlaylistMenu.disconnect();
+  observerPlaylistMenu = null;
+  observerApp.disconnect();
+  observerApp = null;
+  if (logoTimer != undefined)
+  {
+    clearInterval(logoTimer);
+    logoTimer = undefined;
+  }
+  $("#logo-nolife, #tools-extension-css, #playlist-cut-button, #playlist-copy-button, #playlist-paste-button, #playlist-refresh-button, #playlist-sort-button, #playlist-clear-button, #playlist-gears-button, #media-panel .row div.item, #playlist-menu .menu .container .row div.item, .user-logo").remove();
+  $(".user-logo-dropdown").parent().remove();
+  API.off(API.ADVANCE, advance);
+}
+return uninstall;
 })();
