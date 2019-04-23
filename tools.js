@@ -21,13 +21,18 @@ let resBeginning = "Add on top";
 let resEnd = "Append";
 let resOverwrite = "Overwrite playlist";
 
+let resOld = "Old";
+
 let resLogoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction", "Idols", "J-Music", "Retro Gaming", "Christmas", "Roleplay"];
 
-const logoTags = ["[NLN]", "[NLJ]", "[NLO]", "[NLVG]", "[NLIN]", "[NLF]", "[NLID]", "[NLJM]", "[NLRG]", "[NLC]", "[NLRP]"];
+const logoTags =     ["NLN",        "NLJ",      "NLO",       "NLVG",         "NLIN",      "NLF",       "NLID",      "NLJM",      "NLRG",         "NLC",       "NLRP"];
 
-const version = "1.3.1";
-const logoEdges   = ["#555555", "#FF6E6E", "#AAAAAA", "#96C2D0", "#FBE170", "#C7A8CA", "#FDBFFB", "#FF6E6E", "#A6C19E", "#A6C19E", "#96C2D0"];
-const logoLetters = ["#AAAAAA", "#FFFFFF", "#FFFFFF", "#498BC3", "#F2C10C", "#946BA8", "#FA92F9", "#F20A0E", "#698F5C", "#F20A0E", "#FFFFFF"];
+const version = "1.3.2";
+const logoEdges    = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066",    "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66",    "#A6C19E66", "#96C2D066"];
+const logoLetters  = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6",    "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6",    "#F20A0EE6", "#FFFFFFE6"];
+const logoOldN     = [undefined,   undefined,   "#E8E8E8",   "#7BB5DD",      "#E5D3A3",   "#C1B3C0",   "#E8D3DC",   "#E48889",   "#8ACB87",      undefined,   undefined];
+const logoOldOLIFE = [undefined,   undefined,   "#919B93",   "#1B84B4",      "#D59C31",   "#8B629C",   "#E59CBA",   "#A0191D",   "#4C7451",      undefined,   undefined];
+
 const maxPlaylist = 200;
 
 const tsvColumnSeparator = "\t";
@@ -81,6 +86,8 @@ function language_fr()
   resEnd = "Ajouter à la fin";
   resOverwrite = "Ecraser la liste";
 
+  resOld = "Ancien";
+
   resLogoTitles  = ["Aucun", "Japon", "Autre", "Jeu vidéo", "Indies", "Fiction", "Idols", "J-Music", "Rétro Gaming", "Noël", "Jeu de rôle"];
 }
 
@@ -107,7 +114,7 @@ function createCSS()
 {
   if ($("#tools-extension-css").length == 0)
   {
-    const style = $('<style id="plugdj-tools-extension-css">@keyframes fade {from { fill: #DDDDDD; } to { fill: transparent; }} #fullscreen-layer #yt-watermark svg { fill: transparent; animation-name: none; } #fullscreen-layer:hover #yt-watermark svg { fill: #DDDDDD; animation-fill-mode: forwards; animation-name: fade; animation-delay: 4s; animation-duration: 1s; } #fullscreen-layer #yt-watermark:hover svg { fill: #FFFFFF; animation-name: none; } #media-panel .row .item { position: relative; height: 55px; width: 30px; margin-right: 0px; cursor: pointer; } #media-panel .row .item.selected i { display: block; } #media-panel .row .item i { top: 17px; left: 5px; display: none; } #playlist-menu .container .item { position: relative; height: 48px; width: 30px; margin-right: 0px; cursor: pointer; } #playlist-menu .container .item.selected i { display: block; } #playlist-menu .container .item i { top: 17px; left: 5px; display: none; } #playlist-panel.playlist--override #playlist-menu .container .row { padding: 0 0 0 0; } #dialog-container #dialog-playlist-delete .dropdown.open #up { display: block; } #dialog-container #dialog-playlist-delete .dropdown #up { display: none; padding: 6px 10px; } #dialog-container #dialog-playlist-delete .dropdown.open #down { display: none; } #dialog-container #dialog-playlist-delete .dropdown #down { display: block; padding: 6px 10px; } @media (min-width: 1344px) and (min-height: 850px) { .community .community__playing-top { min-width: 818px; min-height: 460px; }} .playlist-buttons-content { flex-wrap: wrap; max-height: 50px; } .playlist-buttons-content .playlist-buttons-import-create, .playlist-buttons-content .playlist-buttons-import-export-tsv { margin-top: 4px; } .playlist-buttons-content .playlist-buttons-import-export-tsv { flex-grow: 1; display: flex; padding-right: 20px; justify-content: center; align-items: center; margin-top: 8px; } .playlist-buttons-content #playlist-import-tsv.button, .playlist-buttons-content #playlist-export-tsv.button { position: relative; bottom: auto; height: auto; width: 46%; margin: 0 2%; max-width: 120px; text-transform: uppercase; text-align: center; cursor: pointer; font-size: 12px; padding: 6px 15px; background: 0 0; border: 1px solid #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; opacity: .6; transition: all .3s; }  #playlist-import-tsv { left: 0; z-index: 50; background: #323742; } #playlist-export-tsv { right: 0; z-index: 55; background: #444a59; } .playlist-buttons-content #playlist-export-tsv.button:hover, .playlist-buttons-content #playlist-import-tsv.button:hover { opacity: 1; transition: all .3s; } .playlist-buttons-content #playlist-export-tsv.button i, .playlist-buttons-content #playlist-import-tsv.button i { top: auto; margin: 0 5px 0 0; font-size: 14px; } .playlist-buttons-content #playlist-create-tsv.button span, .playlist-buttons-content #playlist-import-tsv.button span { margin: 0; top: 0; } @media (min-width: 768px) { .playlist-buttons-content .playlist-buttons-import-export-tsv { padding-right: 0; }}</style>');
+    const style = $('<style id="plugdj-tools-extension-css">@keyframes fade {from { fill: #EEEEEE; } to { fill: transparent; }} #fullscreen-layer #yt-watermark svg { fill: transparent; animation-name: none; } #fullscreen-layer:hover #yt-watermark svg { fill: #EEEEEE; animation-fill-mode: forwards; animation-name: fade; animation-delay: 4s; animation-duration: 1s; } #fullscreen-layer #yt-watermark:hover svg { fill: #FFFFFF; animation-name: none; } #media-panel .row .item { position: relative; height: 55px; width: 30px; margin-right: 0px; cursor: pointer; } #media-panel .row .item.selected i { display: block; } #media-panel .row .item i { top: 17px; left: 5px; display: none; } #playlist-menu .container .item { position: relative; height: 48px; width: 30px; margin-right: 0px; cursor: pointer; } #playlist-menu .container .item.selected i { display: block; } #playlist-menu .container .item i { top: 17px; left: 5px; display: none; } #playlist-panel.playlist--override #playlist-menu .container .row { padding: 0 0 0 0; } #dialog-container #dialog-playlist-delete .dropdown.open #up { display: block; } #dialog-container #dialog-playlist-delete .dropdown #up { display: none; padding: 6px 10px; } #dialog-container #dialog-playlist-delete .dropdown.open #down { display: none; } #dialog-container #dialog-playlist-delete .dropdown #down { display: block; padding: 6px 10px; } @media (min-width: 1344px) and (min-height: 850px) { .community .community__playing-top { min-width: 824px; min-height: 464px; }} .playlist-buttons-content { flex-wrap: wrap; max-height: 50px; } .playlist-buttons-content .playlist-buttons-import-create, .playlist-buttons-content .playlist-buttons-import-export-tsv { margin-top: 4px; } .playlist-buttons-content .playlist-buttons-import-export-tsv { flex-grow: 1; display: flex; padding-right: 20px; justify-content: center; align-items: center; margin-top: 8px; } .playlist-buttons-content #playlist-import-tsv.button, .playlist-buttons-content #playlist-export-tsv.button { position: relative; bottom: auto; height: auto; width: 46%; margin: 0 2%; max-width: 120px; text-transform: uppercase; text-align: center; cursor: pointer; font-size: 12px; padding: 6px 15px; background: 0 0; border: 1px solid #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; opacity: .6; transition: all .3s; }  #playlist-import-tsv { left: 0; z-index: 50; background: #323742; } #playlist-export-tsv { right: 0; z-index: 55; background: #444a59; } .playlist-buttons-content #playlist-export-tsv.button:hover, .playlist-buttons-content #playlist-import-tsv.button:hover { opacity: 1; transition: all .3s; } .playlist-buttons-content #playlist-export-tsv.button i, .playlist-buttons-content #playlist-import-tsv.button i { top: auto; margin: 0 5px 0 0; font-size: 14px; } .playlist-buttons-content #playlist-create-tsv.button span, .playlist-buttons-content #playlist-import-tsv.button span { margin: 0; top: 0; } @media (min-width: 768px) { .playlist-buttons-content .playlist-buttons-import-export-tsv { padding-right: 0; }}</style>');
     $('html > head').append(style);
   }
 }
@@ -326,6 +333,14 @@ function createUserLogoBouncer()
     for(let i = 0; i < logoEdges.length; i++)
     {
       popover += '<li class="user-profile-dropdown__item user-action">' + iconNolife(i, "", 20, 16) + '<span class="user-profile-dropdown__item-text">' + resLogoTitles[i] + '</span></li>';
+    }
+    
+    for(let i = 0; i < logoOldN.length; i++)
+    {
+      if (logoOldN[i] != undefined)
+      {
+        popover += `<li class="user-profile-dropdown__item user-action" style="position: absolute; min-width: 0; top: ${8 + 45 * i}px; left: 136px"><span class="user-profile-dropdown__item-text">${resOld}</span></li>`;
+      }
     }
     popover += '</ul></div></div>';
     popover = $(popover);
@@ -1160,11 +1175,6 @@ function getVisiblePlaylist()
   return getPlaylists().find(element => element.attributes.visible == true);
 }
 
-function iconNolife(logoIndex, style, width, height)
-{
-  return `<svg width="${width}" height="${height}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ${style}><g transform="scale(${width / 320.0})"><path style="fill:${logoEdges[logoIndex]}" d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A22,22,0,0,1,190,0 L239,0 A22,22,0,0,1,261,22L261,100 L298,100 A22,22,0,0,1,319,124 L319,170 L320,227 A22,22,0,0,1,298,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L304 215 L287,173 Z"></path><path style="fill:${logoLetters[logoIndex]};" d="M 85,185 L287,173 L304 215 L102,227 Z M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M189,26 L232,25 L234,117 A7,7,0,0,0,241,124 L295,123 L296,155 L228,156 A37,37,0,0,1,192,119Z"></path></g></svg>`;
-}
-
 function skip()
 {
   const media = API.getMedia();
@@ -1233,13 +1243,24 @@ function advance()
     {
       for(let i = 0; i < logoTags.length; i++)
       {
-        let tag = logoTags[i];
+        let tag = "[" + logoTags[i] + "]";
         if (title.includes(tag))
         {
           removeTag(tag);
           title.replace(tag, "");
           nextLogoIndex = i;
           break;
+        }
+        if (logoOldN[i] != undefined)
+        {
+          tag = "[" + logoTags[i] + "O]";
+          if (title.includes(tag))
+          {
+            removeTag(tag);
+            title.replace(tag, "");
+            nextLogoIndex = i + logoTags.length;
+            break;
+          }
         }
       }
     }
@@ -1371,11 +1392,22 @@ function removeTag(tag)
   });
 }
 
+function iconNolife(logoIndex, style, width, height)
+{
+  return `<svg width="${width}" height="${height}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ${style}><g transform="scale(${width / 320.0})"><path style="fill: ${(logoIndex < logoEdges.length) ? logoEdges[logoIndex] : '#00000000'}" d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A22,22,0,0,1,190,0 L239,0 A22,22,0,0,1,261,22L261,100 L298,100 A22,22,0,0,1,319,124 L319,170 L320,227 A22,22,0,0,1,298,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L304 215 L287,173 Z" /><path style="fill: ${(logoIndex < logoLetters.length) ? logoLetters[logoIndex] : '#00000000'}" d="M 85,185 L287,173 L304 215 L102,227 Z M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M189,26 L232,25 L234,117 A7,7,0,0,0,241,124 L295,123 L296,155 L228,156 A37,37,0,0,1,192,119Z" /></g><g transform="scale(${width / 90.0})"><path style="fill: ${(logoIndex >= logoEdges.length) ? logoOldN[logoIndex - logoEdges.length] : '#00000000'}" d="M 21.84375,11.28125 C 16.944888,11.386012 13,15.272829 13,21.6875 L 13,61.5 C 13,67.871 18.129,73 24.5,73 l 261,0 0,-8.09375 -256,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 L 23,26.6875 C 23,23.363033 26.065793,22.616877 28.3125,26 L 45.5,51.90625 C 54.510486,65.474365 67,61.87387 67,48 l 0,-36 -10,0 0,31 c 0,3.835577 -3.236752,4.375503 -5.8125,0.6875 L 33.59375,18.5 c -3.559047,-5.095908 -7.939774,-7.300232 -11.75,-7.21875 z" /></g></svg>`;
+}
+
 function changeLogo()
 {
+  if (logoIndex >= logoLetters.length)
+  {
+    logoIndex += 2;
+  }
   previousLogoIndex = logoIndex;
   logoNolifeTimerEvent();
-  $(".user-logo svg path").attr('style', 'fill:' + logoLetters[logoIndex]).eq(0).attr('style', 'fill:' + logoEdges[logoIndex]);
+  $(".user-logo svg path").eq(0).attr('style', 'fill: ' + ((logoIndex < logoEdges.length) ? logoEdges[logoIndex] : '#00000000'));
+  $(".user-logo svg path").eq(1).attr('style', 'fill: ' + ((logoIndex < logoLetters.length) ? logoLetters[logoIndex] : '#00000000'));
+  $(".user-logo svg path").eq(2).attr('style', 'fill: ' + ((logoIndex >= logoEdges.length) ? logoOldN[logoIndex - logoEdges.length] : '#00000000'));
 }
 
 function logoNolifeTimerEvent()
@@ -1405,7 +1437,7 @@ function logoNolifeTimerEvent()
     const p2 = 1.0 - p1;
     if (logoNolife.length == 0)
     {
-      logoNolife = $('<svg id="logo-nolife" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="pointer-events: none; position: absolute; z-index: 10"><g><path d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A62,62,0,0,1,218,0 L271,0 A62,62,0,0,1,312,16 A22,22,0,0,1,333,0 L382,0 A22,22,0,0,1,404,22 L404,100 L440,100 L440,22 A22,22,0,0,1,462,0 L509,0 A22,22,0,0,1,530,15 A62,26,0,0,1,571,0 L635,0 A37,37,0,0,1,661,12 A62,62,0,0,1,697,0 L767,0 A22,22,0,0,1,789,22 L789,61 A22,22,0,0,1,778,81 L778,105 A22,22,0,0,1,789,124 L789,170 L800,227 A22,22,0,0,1,778,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L774 215 L757,173 Z"></path><path d=""></path><path d="M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M176,65 A37,37,0,0,1,213,28 L269,27 A37,37,0,0,1,306,64 L307,121 A37,37,0,0,1,270,158 L214,159 A37,37,0,0,1,177,122 Z M227,60 A7,7,0,0,0,220,67 L220 120 A7,7,0,0,0,227,127 L256,126 A7,7,0,0,0,263,119 L262,66 A7,7,0,0,0,255,59 Z M332,26 L375,25 L377,117 A7,7,0,0,0,384,124 L438,123 L439,155 L371,156 A37,37,0,0,1,334,119Z M463,24 L503,23 L505,153 L465,154 Z M530,59 A37,37,0,0,1,567,22 L633,21 L634,52 L580,53 A7,7,0,0,0,573,60 L573,71 L623,70 L624,102 L574,103 L575,152 L531,153Z M656,57 A37,37,0,0,1,693,20 L760,19 L761,50 L706,51 A7,7,0,0,0,699,58 L699,69 L749,68 L750,99 L700,100 L700,111 A7,7,0,0,0,707,118 L761,117 L762,149 L694,150 A37,37,0,0,1,657,113 Z"></path></g></svg>');
+      logoNolife = $('<svg id="logo-nolife" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="pointer-events: none; position: absolute; z-index: 10"><g><g><path d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A62,62,0,0,1,218,0 L271,0 A62,62,0,0,1,312,16 A22,22,0,0,1,333,0 L382,0 A22,22,0,0,1,404,22 L404,100 L440,100 L440,22 A22,22,0,0,1,462,0 L509,0 A22,22,0,0,1,530,15 A62,26,0,0,1,571,0 L635,0 A37,37,0,0,1,661,12 A62,62,0,0,1,697,0 L767,0 A22,22,0,0,1,789,22 L789,61 A22,22,0,0,1,778,81 L778,105 A22,22,0,0,1,789,124 L789,170 L800,227 A22,22,0,0,1,778,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L774 215 L757,173 Z" /><path d="" /><path d="M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M176,65 A37,37,0,0,1,213,28 L269,27 A37,37,0,0,1,306,64 L307,121 A37,37,0,0,1,270,158 L214,159 A37,37,0,0,1,177,122 Z M227,60 A7,7,0,0,0,220,67 L220 120 A7,7,0,0,0,227,127 L256,126 A7,7,0,0,0,263,119 L262,66 A7,7,0,0,0,255,59 Z M332,26 L375,25 L377,117 A7,7,0,0,0,384,124 L438,123 L439,155 L371,156 A37,37,0,0,1,334,119Z M463,24 L503,23 L505,153 L465,154 Z M530,59 A37,37,0,0,1,567,22 L633,21 L634,52 L580,53 A7,7,0,0,0,573,60 L573,71 L623,70 L624,102 L574,103 L575,152 L531,153Z M656,57 A37,37,0,0,1,693,20 L760,19 L761,50 L706,51 A7,7,0,0,0,699,58 L699,69 L749,68 L750,99 L700,100 L700,111 A7,7,0,0,0,707,118 L761,117 L762,149 L694,150 A37,37,0,0,1,657,113 Z" /></g><g transform="scale(3)"><g><path d="M 21.84375,11.28125 C 16.944888,11.386012 13,15.272829 13,21.6875 L 13,61.5 C 13,67.871 18.129,73 24.5,73 l 7.5,0 0,-8.09375 -2.5,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 L 23,26.6875 C 23,23.363033 26.065793,22.616877 28.3125,26 L 45.5,51.90625 C 54.510486,65.474365 67,61.87387 67,48 l 0,-36 -10,0 0,31 c 0,3.835577 -3.236752,4.375503 -5.8125,0.6875 L 33.59375,18.5 c -3.559047,-5.095908 -7.939774,-7.300232 -11.75,-7.21875 z" /><path d=""/><path d="M 84.5,22 C 78.129,22 73,27.129 73,33.5 l 0,14 C 73,53.871 78.129,59 84.5,59 l 29,0 c 6.371,0 11.5,-5.129 11.5,-11.5 l 0,-14 C 125,27.129 119.871,22 113.5,22 l -29,0 z m 5,7.90625 19,0 c 3.601,0 6.5,2.899 6.5,6.5 l 0,8 c 0,3.601 -2.899,6.5 -6.5,6.5 l -19,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 l 0,-8 c 0,-3.601 2.899,-6.5 6.5,-6.5 z"/><path d="m 130.5,22 0,25.5 c 0,6.371 5.129,11.5 11.5,11.5 l 30.5,0 0,-8.09375 -25.5,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 L 140.5,22 l -10,0 z"/><path d="m 178.5,22 0,37 10,0 0,-37 -10,0 z" /><path d="m 207,22 c -6.371,0 -11.5,5.129 -11.5,11.5 l 0,25.5 10,0 0,-15.09375 32,0 0,-7.90625 -31.96875,0 c 0.21277,-3.406022 3.00727,-6.09375 6.46875,-6.09375 l 25.5,0 L 237.5,22 207,22 z" /><path d="m 255,22 c -6.371,0 -11.5,5.129 -11.5,11.5 l 0,14 c 0,6.371 5.129,11.5 11.5,11.5 l 30.5,0 0,-8.09375 -25.5,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 l 0,-0.5 32,0 0,-7.90625 -31.96875,0 c 0.21277,-3.406022 3.00727,-6.09375 6.46875,-6.09375 l 25.5,0 L 285.5,22 255,22 z" /></g></g></svg>');
       ytFrame.before(logoNolife);
     }
     let frameWidth = ytFrame.width();
@@ -1428,11 +1460,24 @@ function logoNolifeTimerEvent()
     
     const scale = width / 900.0;
 
-    logoNolife.css('left', Math.floor(left) + 'px').css('top', Math.floor(top) + 'px').attr('width', Math.floor(width)).attr('height', Math.floor(height)).find('g').attr('transform', `scale(${scale})`);
-    const path = logoNolife.find('path');
-    path.first().attr('style', 'fill:' + logoEdges[logoIndex]).attr("fill-opacity", "0.4");
+    logoNolife.css('left', Math.floor(left) + 'px').css('top', Math.floor(top) + 'px').attr('width', Math.floor(width)).attr('height', Math.floor(height)).find('g').first().attr('transform', `scale(${scale})`);
+    
+    if (logoIndex < logoEdges.length)
+    {
+      const g = logoNolife.find('g g').attr("style", "visibility:hidden").first().attr("style", "visibility:visible");
+      const path = g.find('path');
+      path.first().attr('style', 'fill:' + logoEdges[logoIndex]);
     path.eq(1).attr('d', `M 85,185 L${757 * p1 + 85 * p2},${173 * p1 + 185 * p2} L${774 * p1 + 102 * p2},${215 * p1 + 227 * p2} L102,227 Z`);
-    path.filter(index => index > 0).attr('style', 'fill:' + logoLetters[logoIndex]).attr("fill-opacity", "0.9");
+      path.filter(index => index > 0).attr('style', 'fill:' + logoLetters[logoIndex]);
+  }
+  else
+  {
+      const g = logoNolife.find('g g').attr("style", "visibility:hidden").last().attr("style", "visibility:visible");
+      const path = g.find('path');
+      path.filter(index => index < 2).attr('style', 'fill:' + logoOldN[logoIndex - logoEdges.length]);
+      path.eq(1).attr('d', `m 31,64.906 0,8.094 ${253.5 * p1},0 0,-8.094 ${-253.5 * p1},0 z`);
+      path.filter(index => index > 1).attr('style', 'fill:' + logoOldOLIFE[logoIndex - logoEdges.length]);
+    }
   }
   else
   {
