@@ -27,13 +27,14 @@ let resLogoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction
 
 const logoTags =     ["NLN",        "NLJ",      "NLO",       "NLVG",         "NLIN",      "NLF",       "NLID",      "NLJM",      "NLRG",         "NLC",       "NLRP"];
 
-const version = "1.3.2";
+const version = "1.3.3";
 const logoEdges    = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066",    "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66",    "#A6C19E66", "#96C2D066"];
 const logoLetters  = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6",    "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6",    "#F20A0EE6", "#FFFFFFE6"];
 const logoOldN     = [undefined,   undefined,   "#E8E8E8",   "#7BB5DD",      "#E5D3A3",   "#C1B3C0",   "#E8D3DC",   "#E48889",   "#8ACB87",      undefined,   undefined];
 const logoOldOLIFE = [undefined,   undefined,   "#919B93",   "#1B84B4",      "#D59C31",   "#8B629C",   "#E59CBA",   "#A0191D",   "#4C7451",      undefined,   undefined];
 
 const maxPlaylist = 200;
+const nolifeTv = "nolife-tv";
 
 const tsvColumnSeparator = "\t";
 const tsvRowTerminator = "\r\n";
@@ -52,6 +53,7 @@ let observerApp;
 
 let logoIndex = 0;
 let previousLogoIndex = logoIndex;
+let tempLogoIndex = undefined;
 let logoChanged = false;
 let logoTimer;
 let skipAtTimer;
@@ -253,12 +255,22 @@ function removeStandardImages(data)
 {
   data.forEach(function(data)
   {
-    if ((data.format == 1) && ((data.image == `https://i.ytimg.com/vi/${data.cid}/default.jpg`) || (data.image == `http://i.ytimg.com/vi/${data.cid}/default.jpg`)))
+    if ((data.format == 1) && (data.image.endsWith(`//i.ytimg.com/vi/${data.cid}/default.jpg`)))
     {
       data.image = "";
     }
   });
   return data;
+}
+
+function generateTsv(tsv)
+{
+  const link = document.createElement("a");
+  link.setAttribute("download", "export_" + tsvTypeExport + "_" + formatDate(new Date()) + ".tsv");
+  link.setAttribute("href", "data:text/tab-separated-values;charset=utf-8;base64," + window.btoa(unescape(encodeURIComponent(tsv))));
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
 function exportTsv()
@@ -267,17 +279,16 @@ function exportTsv()
   const atColumns = plColumns.map(column => column.substr(3));
   const columns = tsvExportColumns.filter(column => !column.startsWith("pl-"));
   const header = plColumns.join(tsvColumnSeparator) + tsvColumnSeparator + columns.join(tsvColumnSeparator);
-  const playlists = getPlaylists();
-
-  playlists.filter(playlist => playlist.attributes.checked).reduce((tsv, playlist) => tsv.then(tsv => fetchPlaylist(playlist.id).then(data => removeStandardImages(data).reduce((tsv, row) => columns.reduce((tsv, column) => tsv + tsvColumnSeparator + row[column], atColumns.reduce((tsv, column, index) => tsv + ((index > 0) ? tsvColumnSeparator : "") + playlist.attributes[column], tsv + tsvRowTerminator)), tsv))), Promise.resolve(header)).then(tsv =>
+  const playlists = getPlaylists().filter(playlist => playlist.attributes.checked);
+  if (playlists.length == 0)
   {
-    const link = document.createElement("a");
-    link.setAttribute("download", "export_" + tsvTypeExport + "_" + formatDate(new Date()) + ".tsv");
-    link.setAttribute("href", "data:text/tab-separated-values;charset=utf-8;base64," + window.btoa(unescape(encodeURIComponent(tsv))));
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  });
+    const playlist = {name: "History", id: ""};
+    generateTsv(removeStandardImages(API.getHistory().map(history => history.media).slice()).reduce((tsv, row) => columns.reduce((tsv, column) => tsv + tsvColumnSeparator + row[column], atColumns.reduce((tsv, column, index) => tsv + ((index > 0) ? tsvColumnSeparator : "") + playlist[column], tsv + tsvRowTerminator), tsv), header));
+  }
+  else
+  {
+    playlists.filter(playlist => playlist.attributes.checked).reduce((tsv, playlist) => tsv.then(tsv => fetchPlaylist(playlist.id).then(data => removeStandardImages(data).reduce((tsv, row) => columns.reduce((tsv, column) => tsv + tsvColumnSeparator + row[column], atColumns.reduce((tsv, column, index) => tsv + ((index > 0) ? tsvColumnSeparator : "") + playlist.attributes[column], tsv + tsvRowTerminator)), tsv))), Promise.resolve(header)).then(generateTsv);
+  }
 }
 
 function createPlaylistsButtons()
@@ -347,8 +358,17 @@ function createUserLogoBouncer()
     popover.find('li').click(function()
     {
       logoIndex = $(this).index();
-      changeLogo();
-      logoChanged = true;
+      if (logoIndex >= logoLetters.length)
+      {
+        logoIndex += 2;
+      }
+      let room = document.getElementById("app").getAttribute("data-theme");
+      logoChanged = ((room == nolifeTv) && (logoIndex != 7)) || ((room != nolifeTv) && (logoIndex != 0));
+      if (logoIndex != tempLogoIndex)
+      {
+        previousLogoIndex = logoIndex;
+        changeLogo();
+      }
       closeUserLogoPopup();
     }).mousedown(function(event)
     {
@@ -678,8 +698,23 @@ async function paste()
     if (visiblePlaylist != undefined)
     {
       let id = visiblePlaylist.attributes.id;
+      let count;
+      try
+      {
       let data = await insertPlaylist(id, clipBoard.medias, false);
-      let count = await data[0].count;
+        count = await data[0].count;
+      }
+      catch (exception)
+      {
+        if (exception == "maxItems")
+        {
+          count = maxPlaylist;
+        }
+        else
+        {
+          throw exception;
+        }
+      }
       await refreshPlaylist(id, count);
 
       if ((clipBoard.cut) && (id != clipBoard.id))
@@ -699,7 +734,7 @@ function copyCut(cut)
 {
   clipBoard.cut = cut;
   clipBoard.id = getVisiblePlaylist().attributes.id;
-  clipBoard.medias = getVisiblePlaylistMedias().filter(element => element.attributes.checked);
+  clipBoard.medias = getVisiblePlaylistMedias().filter(element => element.attributes.checked).slice(0);
 }
 
 function createCutCopyPasteButton()
@@ -1089,9 +1124,11 @@ async function insertPlaylist(id, ids, append, media)
     },
     body: JSON.stringify(body)
   });
-
-  console.log(JSON.stringify(body));
   const content = await rawResponse.json();
+  if (await content.status != "ok")
+  {
+    throw await content.status;
+  }
   return await content.data;
 }
 
@@ -1230,6 +1267,7 @@ function advance()
   }
 
   let nextLogoIndex = previousLogoIndex;
+  tempLogoIndex = undefined;
   const media = API.getMedia();
   if (media)
   {
@@ -1237,7 +1275,7 @@ function advance()
     
     if (media.author.trim() == "[Nolife]")
     {
-      nextLogoIndex = 0;
+      tempLogoIndex = nextLogoIndex = 0;
     }
     else
     {
@@ -1248,7 +1286,7 @@ function advance()
         {
           removeTag(tag);
           title.replace(tag, "");
-          nextLogoIndex = i;
+          tempLogoIndex = nextLogoIndex = i;
           break;
         }
         if (logoOldN[i] != undefined)
@@ -1258,7 +1296,7 @@ function advance()
           {
             removeTag(tag);
             title.replace(tag, "");
-            nextLogoIndex = i + logoTags.length;
+            tempLogoIndex = nextLogoIndex = i + logoTags.length;
             break;
           }
         }
@@ -1289,7 +1327,19 @@ function advance()
         const ytFrame = communityPlayingTop.find("#yt-frame");
         if (ytFrame.length)
         {
-          ytFrame.css("transform", "scale(" + scale + ")");
+          let ratio = (screen.width * 9 / 16) / screen.height;
+          let unscale = "";
+          if (ratio != 1.0)
+          {
+            unscale = ` @media all and (display-mode: fullscreen) { #yt-frame { transform: scale(${scale}) scale(${ratio}); }}`;
+          }
+          let ytFrameScale = $('#yt-frame-scale');
+          if (ytFrameScale.length)
+          {
+            ytFrameScale.remove();
+          }
+          ytFrameScale = `<style id="yt-frame-scale" scoped>#yt-frame { transform: scale(${scale}); } ${unscale}</style>`;
+          ytFrame.before(ytFrameScale);
         }
       }
     }
@@ -1299,10 +1349,10 @@ function advance()
       if (communityPlayingTop.length)
       {
         communityPlayingTop.css("overflow", "");
-        const ytFrame = communityPlayingTop.find("#yt-frame");
-        if (ytFrame.length)
+        const ytFrameScale = communityPlayingTop.find("#yt-frame-scale");
+        if (ytFrameScale.length)
         {
-          ytFrame.css("transform", "");
+          ytFrameScale.remove();
         }
       }
     }
@@ -1373,11 +1423,13 @@ function enterRoom(room)
     if ((room == "nolife-tv") && (logoIndex != 7))
     {
       logoIndex = 7;
+      previousLogoIndex = 7;
       changeLogo();
     }
     else if (logoIndex != 0)
     {
       logoIndex = 0;
+      previousLogoIndex = 0;
       changeLogo();
     }
   }
@@ -1399,15 +1451,11 @@ function iconNolife(logoIndex, style, width, height)
 
 function changeLogo()
 {
-  if (logoIndex >= logoLetters.length)
-  {
-    logoIndex += 2;
-  }
-  previousLogoIndex = logoIndex;
   logoNolifeTimerEvent();
-  $(".user-logo svg path").eq(0).attr('style', 'fill: ' + ((logoIndex < logoEdges.length) ? logoEdges[logoIndex] : '#00000000'));
-  $(".user-logo svg path").eq(1).attr('style', 'fill: ' + ((logoIndex < logoLetters.length) ? logoLetters[logoIndex] : '#00000000'));
-  $(".user-logo svg path").eq(2).attr('style', 'fill: ' + ((logoIndex >= logoEdges.length) ? logoOldN[logoIndex - logoEdges.length] : '#00000000'));
+  const path = $(".user-logo svg path");
+  path.eq(0).attr('style', 'fill: ' + ((logoIndex < logoEdges.length) ? logoEdges[logoIndex] : '#00000000'));
+  path.eq(1).attr('style', 'fill: ' + ((logoIndex < logoLetters.length) ? logoLetters[logoIndex] : '#00000000'));
+  path.eq(2).attr('style', 'fill: ' + ((logoIndex >= logoEdges.length) ? logoOldN[logoIndex - logoEdges.length] : '#00000000'));
 }
 
 function logoNolifeTimerEvent()
