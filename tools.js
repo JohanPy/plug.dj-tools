@@ -6,6 +6,10 @@ let resClearName = (name) => `Clear ${name}?`;
 let resTypeCodeToClear = (code) => `Type ${code} To Clear`;
 let resTypeCode = (code) => `Type ${code}`;
 
+let resDeleteMedia = "Delete media";
+let resDeleteItems = (count) => `Delete ${count} items from your playlist?`;
+let resDeleteItem = (author, title) => `Delete ${author} - ${title} from your playlist?`;
+
 let resGearPlaylist = "Generate playlist"
 let resGearName = (name) => `Generate ${name}?`;
 let resTypeTracksCountToGenerate = (total) => `Type the number of tracks to generate / ${total}`;
@@ -27,7 +31,7 @@ let resLogoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction
 
 const logoTags =     ["NLN",        "NLJ",      "NLO",       "NLVG",         "NLIN",      "NLF",       "NLID",      "NLJM",      "NLRG",         "NLC",       "NLRP"];
 
-const version = "1.3.3";
+const version = "1.3.4";
 const logoEdges    = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066",    "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66",    "#A6C19E66", "#96C2D066"];
 const logoLetters  = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6",    "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6",    "#F20A0EE6", "#FFFFFFE6"];
 const logoOldN     = [undefined,   undefined,   "#E8E8E8",   "#7BB5DD",      "#E5D3A3",   "#C1B3C0",   "#E8D3DC",   "#E48889",   "#8ACB87",      undefined,   undefined];
@@ -63,6 +67,7 @@ let skipAtLeave;
 let clipBoard = { id: null, cut: false, medias: []};
 
 let busyMediasCheckboxes = false;
+let scale = "";
 
 function language_fr()
 {
@@ -72,6 +77,10 @@ function language_fr()
   resClearName = (name) => `Effacer ${name} ?`;
   resTypeCodeToClear = (code) => `Tapez ${code} pour effacer`;
   resTypeCode = (code) => `Tapez ${code}`;
+
+  resDeleteMedia = "Supprimer cet élément";
+  resDeleteItems = (count) => `Supprimer ${count} élements de votre liste de lecture ?`;
+  resDeleteItem = (author, title) => `Supprimer ${author} - ${title} de votre liste ?`;
 
   resGearPlaylist = "Générer"
   resGearName = (name) => `Générer ${name} ?`;
@@ -125,7 +134,7 @@ function createFullscreenLayer()
 {
   if ($("#fullscreen-layer").length == 0)
   {
-    const fullscreenLayer = $('<div id="fullscreen-layer" style="position: absolute; z-index: 10; cursor: pointer; left: 0; top: 0; width: 100%; height: 100%;"></div>');
+    const fullscreenLayer = $('<div id="fullscreen-layer" style="position: absolute; z-index: 10; cursor: pointer; left: 0; top: 0; width: 100%; height: 100%;"><iframe style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;" id="yt-resize-frame"></iframe></div>');
     fullscreenLayer.dblclick(function(event)
     {
       if (document.fullscreenElement)
@@ -149,7 +158,7 @@ function createFullscreenLayer()
       svg.before(newSvg);
       svg.remove();
     });
-    const ytWatermark = $('<a id="yt-watermark" style="position: absolute; z-index: 10; right: 0; top: calc(100% - 58px); width: 142px; height: 58px" target="_blank" aria-label="Regarder sur www.youtube.com" href=""><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="26" version="1.1" viewBox="0 0 110 26" width="110" style="position: absolute; top: 16px; left: 16px;"><path d="M 16.68,.99 C 13.55,1.03 7.02,1.16 4.99,1.68 c -1.49,.4 -2.59,1.6 -2.99,3 -0.69,2.7 -0.68,8.31 -0.68,8.31 0,0 -0.01,5.61 .68,8.31 .39,1.5 1.59,2.6 2.99,3 2.69,.7 13.40,.68 13.40,.68 0,0 10.70,.01 13.40,-0.68 1.5,-0.4 2.59,-1.6 2.99,-3 .69,-2.7 .68,-8.31 .68,-8.31 0,0 .11,-5.61 -0.68,-8.31 -0.4,-1.5 -1.59,-2.6 -2.99,-3 C 29.11,.98 18.40,.99 18.40,.99 c 0,0 -0.67,-0.01 -1.71,0 z m 72.21,.90 0,21.28 2.78,0 .31,-1.37 .09,0 c .3,.5 .71,.88 1.21,1.18 .5,.3 1.08,.40 1.68,.40 1.1,0 1.99,-0.49 2.49,-1.59 .5,-1.1 .81,-2.70 .81,-4.90 l 0,-2.40 c 0,-1.6 -0.11,-2.90 -0.31,-3.90 -0.2,-0.89 -0.5,-1.59 -1,-2.09 -0.5,-0.4 -1.10,-0.59 -1.90,-0.59 -0.59,0 -1.18,.19 -1.68,.49 -0.49,.3 -1.01,.80 -1.21,1.40 l 0,-7.90 -3.28,0 z m -49.99,.78 3.90,13.90 .18,6.71 3.31,0 0,-6.71 3.87,-13.90 -3.37,0 -1.40,6.31 c -0.4,1.89 -0.71,3.19 -0.81,3.99 l -0.09,0 c -0.2,-1.1 -0.51,-2.4 -0.81,-3.99 l -1.37,-6.31 -3.40,0 z m 29.59,0 0,2.71 3.40,0 0,17.90 3.28,0 0,-17.90 3.40,0 c 0,0 .00,-2.71 -0.09,-2.71 l -9.99,0 z m -53.49,5.12 8.90,5.18 -8.90,5.09 0,-10.28 z m 89.40,.09 c -1.7,0 -2.89,.59 -3.59,1.59 -0.69,.99 -0.99,2.60 -0.99,4.90 l 0,2.59 c 0,2.2 .30,3.90 .99,4.90 .7,1.1 1.8,1.59 3.5,1.59 1.4,0 2.38,-0.3 3.18,-1 .7,-0.7 1.09,-1.69 1.09,-3.09 l 0,-0.5 -2.90,-0.21 c 0,1 -0.08,1.6 -0.28,2 -0.1,.4 -0.5,.62 -1,.62 -0.3,0 -0.61,-0.11 -0.81,-0.31 -0.2,-0.3 -0.30,-0.59 -0.40,-1.09 -0.1,-0.5 -0.09,-1.21 -0.09,-2.21 l 0,-0.78 5.71,-0.09 0,-2.62 c 0,-1.6 -0.10,-2.78 -0.40,-3.68 -0.2,-0.89 -0.71,-1.59 -1.31,-1.99 -0.7,-0.4 -1.48,-0.59 -2.68,-0.59 z m -50.49,.09 c -1.09,0 -2.01,.18 -2.71,.68 -0.7,.4 -1.2,1.12 -1.49,2.12 -0.3,1 -0.5,2.27 -0.5,3.87 l 0,2.21 c 0,1.5 .10,2.78 .40,3.78 .2,.9 .70,1.62 1.40,2.12 .69,.5 1.71,.68 2.81,.78 1.19,0 2.08,-0.28 2.78,-0.68 .69,-0.4 1.09,-1.09 1.49,-2.09 .39,-1 .49,-2.30 .49,-3.90 l 0,-2.21 c 0,-1.6 -0.2,-2.87 -0.49,-3.87 -0.3,-0.89 -0.8,-1.62 -1.49,-2.12 -0.7,-0.5 -1.58,-0.68 -2.68,-0.68 z m 12.18,.09 0,11.90 c -0.1,.3 -0.29,.48 -0.59,.68 -0.2,.2 -0.51,.31 -0.81,.31 -0.3,0 -0.58,-0.10 -0.68,-0.40 -0.1,-0.3 -0.18,-0.70 -0.18,-1.40 l 0,-10.99 -3.40,0 0,11.21 c 0,1.4 .18,2.39 .68,3.09 .49,.7 1.21,1 2.21,1 1.4,0 2.48,-0.69 3.18,-2.09 l .09,0 .31,1.78 2.59,0 0,-14.99 c 0,0 -3.40,.00 -3.40,-0.09 z m 17.31,0 0,11.90 c -0.1,.3 -0.29,.48 -0.59,.68 -0.2,.2 -0.51,.31 -0.81,.31 -0.3,0 -0.58,-0.10 -0.68,-0.40 -0.1,-0.3 -0.21,-0.70 -0.21,-1.40 l 0,-10.99 -3.40,0 0,11.21 c 0,1.4 .21,2.39 .71,3.09 .5,.7 1.18,1 2.18,1 1.39,0 2.51,-0.69 3.21,-2.09 l .09,0 .28,1.78 2.62,0 0,-14.99 c 0,0 -3.40,.00 -3.40,-0.09 z m 20.90,2.09 c .4,0 .58,.11 .78,.31 .2,.3 .30,.59 .40,1.09 .1,.5 .09,1.21 .09,2.21 l 0,1.09 -2.5,0 0,-1.09 c 0,-1 -0.00,-1.71 .09,-2.21 0,-0.4 .11,-0.8 .31,-1 .2,-0.3 .51,-0.40 .81,-0.40 z m -50.49,.12 c .5,0 .8,.18 1,.68 .19,.5 .28,1.30 .28,2.40 l 0,4.68 c 0,1.1 -0.08,1.90 -0.28,2.40 -0.2,.5 -0.5,.68 -1,.68 -0.5,0 -0.79,-0.18 -0.99,-0.68 -0.2,-0.5 -0.31,-1.30 -0.31,-2.40 l 0,-4.68 c 0,-1.1 .11,-1.90 .31,-2.40 .2,-0.5 .49,-0.68 .99,-0.68 z m 39.68,.09 c .3,0 .61,.10 .81,.40 .2,.3 .27,.67 .37,1.37 .1,.6 .12,1.51 .12,2.71 l .09,1.90 c 0,1.1 .00,1.99 -0.09,2.59 -0.1,.6 -0.19,1.08 -0.49,1.28 -0.2,.3 -0.50,.40 -0.90,.40 -0.3,0 -0.51,-0.08 -0.81,-0.18 -0.2,-0.1 -0.39,-0.29 -0.59,-0.59 l 0,-8.5 c .1,-0.4 .29,-0.7 .59,-1 .3,-0.3 .60,-0.40 .90,-0.40 z"></path></svg></a>');
+    const ytWatermark = $('<a id="yt-watermark" style="position: absolute; z-index: 10; right: 0; top: calc(100% - 58px); width: 142px; height: 58px" target="_blank" aria-label="Regarder sur www.youtube.com" href=""><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="26" version="1.1" viewBox="0 0 110 26" width="110" style="pointer-events: none; position: absolute; top: 16px; left: 16px;"><path d="M 16.68,.99 C 13.55,1.03 7.02,1.16 4.99,1.68 c -1.49,.4 -2.59,1.6 -2.99,3 -0.69,2.7 -0.68,8.31 -0.68,8.31 0,0 -0.01,5.61 .68,8.31 .39,1.5 1.59,2.6 2.99,3 2.69,.7 13.40,.68 13.40,.68 0,0 10.70,.01 13.40,-0.68 1.5,-0.4 2.59,-1.6 2.99,-3 .69,-2.7 .68,-8.31 .68,-8.31 0,0 .11,-5.61 -0.68,-8.31 -0.4,-1.5 -1.59,-2.6 -2.99,-3 C 29.11,.98 18.40,.99 18.40,.99 c 0,0 -0.67,-0.01 -1.71,0 z m 72.21,.90 0,21.28 2.78,0 .31,-1.37 .09,0 c .3,.5 .71,.88 1.21,1.18 .5,.3 1.08,.40 1.68,.40 1.1,0 1.99,-0.49 2.49,-1.59 .5,-1.1 .81,-2.70 .81,-4.90 l 0,-2.40 c 0,-1.6 -0.11,-2.90 -0.31,-3.90 -0.2,-0.89 -0.5,-1.59 -1,-2.09 -0.5,-0.4 -1.10,-0.59 -1.90,-0.59 -0.59,0 -1.18,.19 -1.68,.49 -0.49,.3 -1.01,.80 -1.21,1.40 l 0,-7.90 -3.28,0 z m -49.99,.78 3.90,13.90 .18,6.71 3.31,0 0,-6.71 3.87,-13.90 -3.37,0 -1.40,6.31 c -0.4,1.89 -0.71,3.19 -0.81,3.99 l -0.09,0 c -0.2,-1.1 -0.51,-2.4 -0.81,-3.99 l -1.37,-6.31 -3.40,0 z m 29.59,0 0,2.71 3.40,0 0,17.90 3.28,0 0,-17.90 3.40,0 c 0,0 .00,-2.71 -0.09,-2.71 l -9.99,0 z m -53.49,5.12 8.90,5.18 -8.90,5.09 0,-10.28 z m 89.40,.09 c -1.7,0 -2.89,.59 -3.59,1.59 -0.69,.99 -0.99,2.60 -0.99,4.90 l 0,2.59 c 0,2.2 .30,3.90 .99,4.90 .7,1.1 1.8,1.59 3.5,1.59 1.4,0 2.38,-0.3 3.18,-1 .7,-0.7 1.09,-1.69 1.09,-3.09 l 0,-0.5 -2.90,-0.21 c 0,1 -0.08,1.6 -0.28,2 -0.1,.4 -0.5,.62 -1,.62 -0.3,0 -0.61,-0.11 -0.81,-0.31 -0.2,-0.3 -0.30,-0.59 -0.40,-1.09 -0.1,-0.5 -0.09,-1.21 -0.09,-2.21 l 0,-0.78 5.71,-0.09 0,-2.62 c 0,-1.6 -0.10,-2.78 -0.40,-3.68 -0.2,-0.89 -0.71,-1.59 -1.31,-1.99 -0.7,-0.4 -1.48,-0.59 -2.68,-0.59 z m -50.49,.09 c -1.09,0 -2.01,.18 -2.71,.68 -0.7,.4 -1.2,1.12 -1.49,2.12 -0.3,1 -0.5,2.27 -0.5,3.87 l 0,2.21 c 0,1.5 .10,2.78 .40,3.78 .2,.9 .70,1.62 1.40,2.12 .69,.5 1.71,.68 2.81,.78 1.19,0 2.08,-0.28 2.78,-0.68 .69,-0.4 1.09,-1.09 1.49,-2.09 .39,-1 .49,-2.30 .49,-3.90 l 0,-2.21 c 0,-1.6 -0.2,-2.87 -0.49,-3.87 -0.3,-0.89 -0.8,-1.62 -1.49,-2.12 -0.7,-0.5 -1.58,-0.68 -2.68,-0.68 z m 12.18,.09 0,11.90 c -0.1,.3 -0.29,.48 -0.59,.68 -0.2,.2 -0.51,.31 -0.81,.31 -0.3,0 -0.58,-0.10 -0.68,-0.40 -0.1,-0.3 -0.18,-0.70 -0.18,-1.40 l 0,-10.99 -3.40,0 0,11.21 c 0,1.4 .18,2.39 .68,3.09 .49,.7 1.21,1 2.21,1 1.4,0 2.48,-0.69 3.18,-2.09 l .09,0 .31,1.78 2.59,0 0,-14.99 c 0,0 -3.40,.00 -3.40,-0.09 z m 17.31,0 0,11.90 c -0.1,.3 -0.29,.48 -0.59,.68 -0.2,.2 -0.51,.31 -0.81,.31 -0.3,0 -0.58,-0.10 -0.68,-0.40 -0.1,-0.3 -0.21,-0.70 -0.21,-1.40 l 0,-10.99 -3.40,0 0,11.21 c 0,1.4 .21,2.39 .71,3.09 .5,.7 1.18,1 2.18,1 1.39,0 2.51,-0.69 3.21,-2.09 l .09,0 .28,1.78 2.62,0 0,-14.99 c 0,0 -3.40,.00 -3.40,-0.09 z m 20.90,2.09 c .4,0 .58,.11 .78,.31 .2,.3 .30,.59 .40,1.09 .1,.5 .09,1.21 .09,2.21 l 0,1.09 -2.5,0 0,-1.09 c 0,-1 -0.00,-1.71 .09,-2.21 0,-0.4 .11,-0.8 .31,-1 .2,-0.3 .51,-0.40 .81,-0.40 z m -50.49,.12 c .5,0 .8,.18 1,.68 .19,.5 .28,1.30 .28,2.40 l 0,4.68 c 0,1.1 -0.08,1.90 -0.28,2.40 -0.2,.5 -0.5,.68 -1,.68 -0.5,0 -0.79,-0.18 -0.99,-0.68 -0.2,-0.5 -0.31,-1.30 -0.31,-2.40 l 0,-4.68 c 0,-1.1 .11,-1.90 .31,-2.40 .2,-0.5 .49,-0.68 .99,-0.68 z m 39.68,.09 c .3,0 .61,.10 .81,.40 .2,.3 .27,.67 .37,1.37 .1,.6 .12,1.51 .12,2.71 l .09,1.90 c 0,1.1 .00,1.99 -0.09,2.59 -0.1,.6 -0.19,1.08 -0.49,1.28 -0.2,.3 -0.50,.40 -0.90,.40 -0.3,0 -0.51,-0.08 -0.81,-0.18 -0.2,-0.1 -0.39,-0.29 -0.59,-0.59 l 0,-8.5 c .1,-0.4 .29,-0.7 .59,-1 .3,-0.3 .60,-0.40 .90,-0.40 z"></path></svg></a>');
     ytWatermark.click(function()
     {
       const media = API.getMedia();
@@ -168,6 +177,11 @@ function createFullscreenLayer()
     $('#yt-frame').before(fullscreenLayer.append(ytWatermark));
     $(".community__playing-controls").css("pointer-events", "none");
     $(".community__playing-top-buttons").css("pointer-events", "auto");
+    document.getElementById('yt-resize-frame').contentWindow.addEventListener('resize', function()
+    {
+      logoNolifeTimerEvent();
+      rescale();
+    });
   }
 }
 
@@ -505,14 +519,56 @@ function gearDialog(playlists, id, name, count, total)
   });
 }
 
-async function clear(id)
+async function clear(id, medias)
 {
-  const data = await clearPlaylist(id);
+  let data;
+  if (medias)
+  {
+    data = await deletePlaylist(id, medias);
+  }
+  else
+  {
+    data = await clearPlaylist(id);
+  }
   const count = await data.length;
   await refreshPlaylist(id, count);
 }
 
-function clearDialog(id, name)
+function clearCheckedDialog(id, name, medias)
+{
+  $("#dialog-container").html(`<div id="dialog-confirm" class="dialog destructive"><div class="dialog-frame"><span class="title">${resDeleteMedia}</span><i class="icon icon-dialog-close"></i></div><div class="dialog-body"><span class="message" style="top: 63.5px;">${(medias.length == 1) ? resDeleteItem(medias[0].attributes.author, medias[0].attributes.title) : resDeleteItems(medias.length)}</span></div><div class="dialog-frame"><div class="button cancel"><span>${resCancel}</span></div><div class="button submit"><span>${resDeleteMedia}</span></div></div></div>`).css("display", "block").click(function(event)
+  {
+    let cid = $(event.target).prop('id');
+    if (cid == "")
+    {
+      cid = $(event.target).prop('class');
+      if (cid == "")
+      {
+        cid = $(event.target).parent().prop('class');
+      }
+    }
+
+    if (cid == "button submit")
+    {
+      if ($("#dialog-confirm").hasClass("no-submit") == false)
+      {
+        clear(id, medias);
+      }
+      else
+      {
+        cid = "";
+      }
+    }
+
+    if (["dialog-container", "icon icon-dialog-close", "button submit", "button cancel"].includes(cid))
+    {
+      $(this).html('').css("display", "none");
+      $(this).unbind(event);
+    }
+  });
+}
+
+function clearAllDialog(id, name)
 {
   const code = getRandomInt(900) + 100;
   $("#dialog-container").html(`<div id="dialog-playlist-delete" class="dialog destructive no-submit"><div class="dialog-frame"><span class="title">${resClearPlaylist}</span><i class="icon icon-dialog-close"></i></div><div class="dialog-body"><span class="message">${resClearName(name)}</span><div class="dialog-input-container"><span class="dialog-input-label">${resTypeCodeToClear(code)}</span><div class="dialog-input-background"><input type="text" maxlength="3" placeholder="${resTypeCode(code)}" name="code" value=""></div></div></div><div class="dialog-frame"><div class="button cancel"><span>${resCancel}</span></div><div class="button submit"><span>${resClearPlaylist}</span></div></div></div>`).css("display", "block").click(function(event)
@@ -611,7 +667,15 @@ function createClearButton()
     const visiblePlaylist = getVisiblePlaylist();
     if (visiblePlaylist != undefined)
     {
-      clearDialog(visiblePlaylist.attributes.id, visiblePlaylist.attributes.name);
+      const medias = getCheckedPlaylistMedias().slice(0);
+      if (medias.length)
+      {
+        clearCheckedDialog(visiblePlaylist.attributes.id, visiblePlaylist.attributes.name, medias);
+      }
+      else
+      {
+        clearAllDialog(visiblePlaylist.attributes.id, visiblePlaylist.attributes.name);
+      }
     }
   });
 }
@@ -734,7 +798,7 @@ function copyCut(cut)
 {
   clipBoard.cut = cut;
   clipBoard.id = getVisiblePlaylist().attributes.id;
-  clipBoard.medias = getVisiblePlaylistMedias().filter(element => element.attributes.checked).slice(0);
+  clipBoard.medias = getCheckedPlaylistMedias().slice(0);
 }
 
 function createCutCopyPasteButton()
@@ -769,13 +833,16 @@ function createPlaylistsCheckboxes()
       const checkbox = $('<div class="item' + selected + '"><i class="icon icon-check-blue"></i></div>');
       checkbox.click(function(event)
       {
-        $(this).toggleClass("selected");
+        if (event.detail == 1)
+        {
+          $(this).toggleClass("selected");
+        }
         const parent = $(this).parent();
         const index = parent.index();
         const playlists = getPlaylists();
         const checked = $(this).hasClass("selected");
         playlists[index].attributes.checked = checked;
-        if (event.ctrlKey)
+        if ((event.ctrlKey) || (event.detail > 1))
         {
           const name = playlists[index].attributes.name;
           const minus = name.indexOf("-");
@@ -819,7 +886,7 @@ function createMediasCheckboxes()
   busyMediasCheckboxes = true;
 
   const medias = getVisiblePlaylistMedias();
-  const rows = $("#media-panel .row");
+  const rows = $("#media-panel .media-list.playlist-media .row");
   const lastIndex = rows.length - 1;
 
   let offsetIndex = 0;
@@ -861,13 +928,16 @@ function createMediasCheckboxes()
       checkbox.click(function(event)
       {
         busyMediasCheckboxes = true;
-        $(this).toggleClass("selected");
+        if (event.detail == 1)
+        {
+          $(this).toggleClass("selected");
+        }
         const medias = getVisiblePlaylistMedias();
         const media = medias[mediaIndex];
         const checked = $(this).hasClass("selected");
         media.attributes.checked = checked;
         const parent = $(this).parent().parent();
-        if (event.ctrlKey)
+        if ((event.ctrlKey) || (event.detail > 1))
         {
           const author = getAuthor(media.attributes.author);
           medias.forEach(function(element, index)
@@ -1197,6 +1267,11 @@ function getVisiblePlaylistMedias()
   return _.find(require.s.contexts._.defined, m => m && m instanceof Backbone.Collection && m._events && m._events["change:author"]).models;
 }
 
+function getCheckedPlaylistMedias()
+{
+  return getVisiblePlaylistMedias().filter(element => element.attributes.checked);
+}
+
 function getMyHistory()
 {
   return _.find(require.s.contexts._.defined, m => m && m instanceof Backbone.Collection && m._events == undefined && typeof m.model === "function" && m.model.prototype.defaults.hasOwnProperty("room")).models;
@@ -1249,6 +1324,39 @@ function skip()
       else
       {
         skipAtTimer = setTimeout(skip, time * 1000);
+      }
+    }
+  }
+}
+
+function rescale()
+{
+  const communityPlayingTop = $('.community__playing-top');
+  if (communityPlayingTop.length)
+  {
+    if (scale == "")
+    {
+      communityPlayingTop.css("overflow", "");
+    }
+    else
+    {
+      communityPlayingTop.css("overflow", "hidden");
+    }
+    const ytFrame = $('#yt-frame');
+    if (ytFrame.length)
+    {
+      if (scale == "")
+      {
+        ytFrame.css("transform", "");
+      }
+      else
+      {
+        const fullscreenLayer = $("#fullscreen-layer");
+        if (fullscreenLayer.length)
+        {
+          let ratio = (fullscreenLayer.width() * 9 / 16) / fullscreenLayer.height();
+          ytFrame.css("transform", "scale(" + scale + ") scale(" + ratio + ")");
+        }
       }
     }
   }
@@ -1309,7 +1417,7 @@ function advance()
     match = exp.exec(title);
     if ((match != null) && (match.length == 6))
     {
-      let scale = match[2];
+      scale = match[2];
       let tag = match[1] + match[2];
       if (match[4] != undefined)
       {
@@ -1319,42 +1427,12 @@ function advance()
       tag += match[5];
       title.replace(tag, "");
       removeTag(tag);
-
-      const communityPlayingTop = $('.community__playing-top');
-      if (communityPlayingTop.length)
-      {
-        communityPlayingTop.css("overflow", "hidden");
-        const ytFrame = communityPlayingTop.find("#yt-frame");
-        if (ytFrame.length)
-        {
-          let ratio = (screen.width * 9 / 16) / screen.height;
-          let unscale = "";
-          if (ratio != 1.0)
-          {
-            unscale = ` @media all and (display-mode: fullscreen) { #yt-frame { transform: scale(${scale}) scale(${ratio}); }}`;
-          }
-          let ytFrameScale = $('#yt-frame-scale');
-          if (ytFrameScale.length)
-          {
-            ytFrameScale.remove();
-          }
-          ytFrameScale = `<style id="yt-frame-scale" scoped>#yt-frame { transform: scale(${scale}); } ${unscale}</style>`;
-          ytFrame.before(ytFrameScale);
-        }
-      }
+      rescale();
     }
     else
     {
-      const communityPlayingTop = $('.community__playing-top');
-      if (communityPlayingTop.length)
-      {
-        communityPlayingTop.css("overflow", "");
-        const ytFrameScale = communityPlayingTop.find("#yt-frame-scale");
-        if (ytFrameScale.length)
-        {
-          ytFrameScale.remove();
-        }
-      }
+      scale = "";
+      rescale();
     }
 
     exp = /.*(\[SKIP ?AT ?)([0-9]+)(:[0-5][0-9])?(:[0-5][0-9])?(\]).*|.*(\[DJLEAVE AFTER\]).*/;
