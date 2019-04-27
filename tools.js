@@ -54,6 +54,7 @@ let tsvTypeExport;
 let observerMediaPanel;
 let observerPlaylistMenu;
 let observerApp;
+let observerDialogContainer;
 
 let logoIndex = 0;
 let previousLogoIndex = logoIndex;
@@ -68,6 +69,12 @@ let clipBoard = { id: null, cut: false, medias: []};
 
 let busyMediasCheckboxes = false;
 let scale = "";
+
+let panelNolifeAuthor = "";
+let panelNolifeTitle = "";
+let panelNolifeTop = false;
+let panelNolifeRight = 125;
+let panelNolifeDelay = 0;
 
 function language_fr()
 {
@@ -91,7 +98,7 @@ function language_fr()
   resSortName = (name) => `Êtes vous sûr(e) de vouloir trier ${name} ?`;
 
   resMaxByArtist = "Max titre par artiste (vide = non limité)";
-  resTypeMaxByArtist = "Max artist";
+  resTypeMaxByArtist = "Max artiste";
 
   resBeginning = "Ajouter au début";
   resEnd = "Ajouter à la fin";
@@ -125,7 +132,7 @@ function createCSS()
 {
   if ($("#tools-extension-css").length == 0)
   {
-    const style = $('<style id="plugdj-tools-extension-css">@keyframes fade {from { fill: #EEEEEE; } to { fill: transparent; }} #fullscreen-layer #yt-watermark svg { fill: transparent; animation-name: none; } #fullscreen-layer:hover #yt-watermark svg { fill: #EEEEEE; animation-fill-mode: forwards; animation-name: fade; animation-delay: 4s; animation-duration: 1s; } #fullscreen-layer #yt-watermark:hover svg { fill: #FFFFFF; animation-name: none; } #media-panel .row .item { position: relative; height: 55px; width: 30px; margin-right: 0px; cursor: pointer; } #media-panel .row .item.selected i { display: block; } #media-panel .row .item i { top: 17px; left: 5px; display: none; } #playlist-menu .container .item { position: relative; height: 48px; width: 30px; margin-right: 0px; cursor: pointer; } #playlist-menu .container .item.selected i { display: block; } #playlist-menu .container .item i { top: 17px; left: 5px; display: none; } #playlist-panel.playlist--override #playlist-menu .container .row { padding: 0 0 0 0; } #dialog-container #dialog-playlist-delete .dropdown.open #up { display: block; } #dialog-container #dialog-playlist-delete .dropdown #up { display: none; padding: 6px 10px; } #dialog-container #dialog-playlist-delete .dropdown.open #down { display: none; } #dialog-container #dialog-playlist-delete .dropdown #down { display: block; padding: 6px 10px; } @media (min-width: 1344px) and (min-height: 850px) { .community .community__playing-top { min-width: 824px; min-height: 464px; }} .playlist-buttons-content { flex-wrap: wrap; max-height: 50px; } .playlist-buttons-content .playlist-buttons-import-create, .playlist-buttons-content .playlist-buttons-import-export-tsv { margin-top: 4px; } .playlist-buttons-content .playlist-buttons-import-export-tsv { flex-grow: 1; display: flex; padding-right: 20px; justify-content: center; align-items: center; margin-top: 8px; } .playlist-buttons-content #playlist-import-tsv.button, .playlist-buttons-content #playlist-export-tsv.button { position: relative; bottom: auto; height: auto; width: 46%; margin: 0 2%; max-width: 120px; text-transform: uppercase; text-align: center; cursor: pointer; font-size: 12px; padding: 6px 15px; background: 0 0; border: 1px solid #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; opacity: .6; transition: all .3s; }  #playlist-import-tsv { left: 0; z-index: 50; background: #323742; } #playlist-export-tsv { right: 0; z-index: 55; background: #444a59; } .playlist-buttons-content #playlist-export-tsv.button:hover, .playlist-buttons-content #playlist-import-tsv.button:hover { opacity: 1; transition: all .3s; } .playlist-buttons-content #playlist-export-tsv.button i, .playlist-buttons-content #playlist-import-tsv.button i { top: auto; margin: 0 5px 0 0; font-size: 14px; } .playlist-buttons-content #playlist-create-tsv.button span, .playlist-buttons-content #playlist-import-tsv.button span { margin: 0; top: 0; } @media (min-width: 768px) { .playlist-buttons-content .playlist-buttons-import-export-tsv { padding-right: 0; }}</style>');
+    const style = $('<style id="plugdj-tools-extension-css">.unselectable { pointer-events: none; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; } @keyframes unfade {from { opacity: 0.0; } to { opacity: 0.9; }} #panel-nolife { text-align: right; position: absolute; z-index: 10; width: 4000px; height: 60px; filter: blur(0.5px); opacity: 0.9;} .title-nolife { color: black; font-size: 32px; font-family: calibri; font-style: italic; font-weight: bold; no-letter-spacing: 0.25px; text-shadow: 2px 2px #AAA, 1px 1px #AAA; position: relative; height: 34px; } .author-nolife, .author-front-nolife { font-size: 26px; font-family: tahoma; font-weight: bold; letter-spacing: 0.25px; position: relative; height: 26px; } .author-nolife { color: black; -webkit-text-stroke: 8px black; } .author-front-nolife { color: white; top: -26px; -webkit-text-stroke: 1px black; } @keyframes fade {from { fill: #EEEEEE; } to { fill: transparent; }} #fullscreen-layer #yt-watermark svg { fill: transparent; animation-name: none; } #fullscreen-layer:hover #yt-watermark svg { fill: #EEEEEE; animation-fill-mode: forwards; animation-name: fade; animation-delay: 4s; animation-duration: 1s; } #fullscreen-layer #yt-watermark:hover svg { fill: #FFFFFF; animation-name: none; } #media-panel .row .item { position: relative; height: 55px; width: 30px; margin-right: 0px; cursor: pointer; } #media-panel .row .item.selected i { display: block; } #media-panel .row .item i { top: 17px; left: 5px; display: none; } #playlist-menu .container .item { position: relative; height: 48px; width: 30px; margin-right: 0px; cursor: pointer; } #playlist-menu .container .item.selected i { display: block; } #playlist-menu .container .item i { top: 17px; left: 5px; display: none; } #playlist-panel.playlist--override #playlist-menu .container .row { padding: 0 0 0 0; } #dialog-container #dialog-playlist-delete .dropdown.open #up { display: block; } #dialog-container #dialog-playlist-delete .dropdown #up { display: none; padding: 6px 10px; } #dialog-container #dialog-playlist-delete .dropdown.open #down { display: none; } #dialog-container #dialog-playlist-delete .dropdown #down { display: block; padding: 6px 10px; } @media (min-width: 1344px) and (min-height: 850px) { .community .community__playing-top { min-width: 824px; min-height: 464px; }} .playlist-buttons-content { flex-wrap: wrap; max-height: 50px; } .playlist-buttons-content .playlist-buttons-import-create, .playlist-buttons-content .playlist-buttons-import-export-tsv { margin-top: 4px; } .playlist-buttons-content .playlist-buttons-import-export-tsv { flex-grow: 1; display: flex; padding-right: 20px; justify-content: center; align-items: center; margin-top: 8px; } .playlist-buttons-content #playlist-import-tsv.button, .playlist-buttons-content #playlist-export-tsv.button { position: relative; bottom: auto; height: auto; width: 46%; margin: 0 2%; max-width: 120px; text-transform: uppercase; text-align: center; cursor: pointer; font-size: 12px; padding: 6px 15px; background: 0 0; border: 1px solid #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; opacity: .6; transition: all .3s; }  #playlist-import-tsv { left: 0; z-index: 50; background: #323742; } #playlist-export-tsv { right: 0; z-index: 55; background: #444a59; } .playlist-buttons-content #playlist-export-tsv.button:hover, .playlist-buttons-content #playlist-import-tsv.button:hover { opacity: 1; transition: all .3s; } .playlist-buttons-content #playlist-export-tsv.button i, .playlist-buttons-content #playlist-import-tsv.button i { top: auto; margin: 0 5px 0 0; font-size: 14px; } .playlist-buttons-content #playlist-create-tsv.button span, .playlist-buttons-content #playlist-import-tsv.button span { margin: 0; top: 0; } @media (min-width: 768px) { .playlist-buttons-content .playlist-buttons-import-export-tsv { padding-right: 0; }}</style>');
     $('html > head').append(style);
   }
 }
@@ -134,7 +141,7 @@ function createFullscreenLayer()
 {
   if ($("#fullscreen-layer").length == 0)
   {
-    const fullscreenLayer = $('<div id="fullscreen-layer" style="position: absolute; z-index: 10; cursor: pointer; left: 0; top: 0; width: 100%; height: 100%;"><iframe style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;" id="yt-resize-frame"></iframe></div>');
+    const fullscreenLayer = $('<div id="fullscreen-layer" style="position: absolute; z-index: 10; cursor: pointer; left: 0; top: 0; width: 100%; height: 100%;"><iframe class="unselectable" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;" id="yt-resize-frame"></iframe></div>');
     fullscreenLayer.dblclick(function(event)
     {
       if (document.fullscreenElement)
@@ -179,26 +186,35 @@ function createFullscreenLayer()
     $(".community__playing-top-buttons").css("pointer-events", "auto");
     document.getElementById('yt-resize-frame').contentWindow.addEventListener('resize', function()
     {
-      logoNolifeTimerEvent();
       rescale();
+      logoNolifeTimerEvent();
+      panelNolifeUpdate();
     });
   }
+}
+
+function createObserver(element, config, callback)
+{
+  let observer = new MutationObserver(callback);
+  observer.observe(element, config);
+  return observer;
 }
 
 function install()
 {
   console.log(`plug.dj tools v${version}`);
-  let playlistMenu = false, mediaPanel = false, userProfile = false, app = false, communitySongPlaying = false, playlistButtonsContent = false, ytFrame = false;
+  let playlistMenu = false, mediaPanel = false, userProfile = false, app = false, communitySongPlaying = false, playlistButtonsContent = false, ytFrame = false, dialogContainer = false;
   
   function checkAll()
   {
     playlistMenu = playlistMenu || (document.getElementById("playlist-menu") != null);
-    mediaPanel = mediaPanel || document.getElementById("media-panel") != null;
+    mediaPanel = mediaPanel || (document.getElementById("media-panel") != null);
     userProfile = userProfile || (document.getElementsByClassName("user-profile").length > 0);
     app = app || (document.getElementById("app") != null);
     communitySongPlaying = communitySongPlaying || (document.getElementsByClassName("community__song-playing").length > 0);
     playlistButtonsContent = playlistButtonsContent || (document.getElementsByClassName("playlist-buttons-content").length > 0);
-    return playlistMenu && mediaPanel && userProfile && app && playlistButtonsContent && communitySongPlaying;
+    dialogContainer = dialogContainer || (document.getElementById("dialog-container") != null);
+    return playlistMenu && mediaPanel && userProfile && app && playlistButtonsContent && communitySongPlaying && dialogContainer;
   }
 
   function checkFsl()
@@ -221,8 +237,7 @@ function install()
 
   if (!all || !fsl)
   {
-    let config = { attributes: false, childList: true, subtree: true };
-    let callback = function(mutationsList, observer)
+    let observer = createObserver(document.body, { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
     {
       if (!all)
       {
@@ -244,9 +259,7 @@ function install()
       {
         observer.disconnect();
       }
-    };
-    let observer = new MutationObserver(callback);
-    observer.observe(document.body, config);
+    });
   }
 }
 
@@ -265,7 +278,12 @@ function formatDate(date)
   return format.substr(0, 4) + "-" + format.substr(4, 2) + "-" + format.substr(6, 2) + "_" + format.substr(8, 2) + "-" + format.substr(10, 2) + "-" + format.substr(12, 2);
 }
 
-function removeStandardImages(data)
+function replaceEntities(string)
+{
+  return string.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+}
+
+function patchExport(data)
 {
   data.forEach(function(data)
   {
@@ -273,6 +291,8 @@ function removeStandardImages(data)
     {
       data.image = "";
     }
+    data.title = replaceEntities(data.title);
+    data.author = replaceEntities(data.author);
   });
   return data;
 }
@@ -297,11 +317,11 @@ function exportTsv()
   if (playlists.length == 0)
   {
     const playlist = {name: "History", id: ""};
-    generateTsv(removeStandardImages(API.getHistory().map(history => history.media).slice()).reduce((tsv, row) => columns.reduce((tsv, column) => tsv + tsvColumnSeparator + row[column], atColumns.reduce((tsv, column, index) => tsv + ((index > 0) ? tsvColumnSeparator : "") + playlist[column], tsv + tsvRowTerminator), tsv), header));
+    generateTsv(patchExport(API.getHistory().map(history => history.media).slice()).reduce((tsv, row) => columns.reduce((tsv, column) => tsv + tsvColumnSeparator + row[column], atColumns.reduce((tsv, column, index) => tsv + ((index > 0) ? tsvColumnSeparator : "") + playlist[column], tsv + tsvRowTerminator), tsv), header));
   }
   else
   {
-    playlists.filter(playlist => playlist.attributes.checked).reduce((tsv, playlist) => tsv.then(tsv => fetchPlaylist(playlist.id).then(data => removeStandardImages(data).reduce((tsv, row) => columns.reduce((tsv, column) => tsv + tsvColumnSeparator + row[column], atColumns.reduce((tsv, column, index) => tsv + ((index > 0) ? tsvColumnSeparator : "") + playlist.attributes[column], tsv + tsvRowTerminator)), tsv))), Promise.resolve(header)).then(generateTsv);
+    playlists.filter(playlist => playlist.attributes.checked).reduce((tsv, playlist) => tsv.then(tsv => fetchPlaylist(playlist.id).then(data => patchExport(data).reduce((tsv, row) => columns.reduce((tsv, column) => tsv + tsvColumnSeparator + row[column], atColumns.reduce((tsv, column, index) => tsv + ((index > 0) ? tsvColumnSeparator : "") + playlist.attributes[column], tsv + tsvRowTerminator)), tsv))), Promise.resolve(header)).then(generateTsv);
   }
 }
 
@@ -329,6 +349,41 @@ function createPlaylistsButtons()
     playlistButtonsImportExportTsv.append(playlistExportTsv);
 
     $('.playlist-buttons-content').append(playlistButtonsImportExportTsv);
+  }
+}
+
+function createMediaUpdate()
+{
+  let index = $("#media-panel .media-list.playlist-media .row .actions").parent().index() + Math.floor($("#media-panel .media-list.playlist-media .row").first().height() / 55) - 1;
+  if (index >= 0)
+  {
+    let media = getVisiblePlaylistMedias().slice(0)[index];
+    if ($("#dialog-media-update .tag").length == 0)
+    {
+      const tag = $('<style scoped>.tag { position: absolute; background-color: #00c6ff; border-radius: 50%; right: 40px; top: 55px; width: 30px; height: 30px; cursor: pointer; } .tag i { left: 0; top: 0;} }</style><div class="tag"><i class="icon icon-import-big"></i></div>');
+      tag.last().click(async function(event)
+      {
+        let data = await mediaTag(media.attributes.cid);
+        if (data.status == "ok")
+        {
+          $(this).css("background-color", "#00c600");
+          $("#dialog-media-update input[name=author]").val(data.author);
+          $("#dialog-media-update input[name=title]").val(data.title);
+        }
+        else
+        {
+          $(this).css("background-color", "#c60000");
+        }
+      });
+      $('#dialog-media-update .dialog-body').append(tag);
+      const restore = $('<style scoped>.restore { position: absolute; background-color: #00c6ff; border-radius: 50%; right: 74px; top: 55px; width: 30px; height: 30px; cursor: pointer; } .restore i { left: 0; top: 0;} }</style><div class="restore"><i class="icon icon-refresh-video"></i></div>');
+      restore.last().click(async function(event)
+      {
+        $("#dialog-media-update input[name=author]").val(media.attributes.author);
+        $("#dialog-media-update input[name=title]").val(media.attributes.title);
+      });
+      $('#dialog-media-update .dialog-body').append(restore);
+    }
   }
 }
 
@@ -917,7 +972,7 @@ function createMediasCheckboxes()
         checkbox.unbind();
       }
       const mediaIndex = index + offsetIndex;
-      if (medias[mediaIndex].attributes.checked)
+      if ((mediaIndex < medias.length) && medias[mediaIndex].attributes.checked)
       {
         checkbox.addClass("selected");
       }
@@ -954,7 +1009,6 @@ function createMediasCheckboxes()
         }
         else if (event.altKey)
         {
-          console.log(offsetIndex, lastIndex);
           medias.forEach(function(element, index)
           {
             if (checked != (element.attributes.checked == true))
@@ -985,9 +1039,7 @@ function createObservers()
 {
   if (observerMediaPanel == null)
   {
-    const mediaPanel = document.getElementById('media-panel');
-    const mediaPanelConfig = { attributes: false, childList: true, subtree: true };
-    const mediaPanelCallback = function(mutationsList, observer)
+    observerMediaPanel = createObserver(document.getElementById('media-panel'), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
     {
       for(let mutation of mutationsList)
       {
@@ -1009,16 +1061,12 @@ function createObservers()
           break;
         }
       }
-    };
-    observerMediaPanel = new MutationObserver(mediaPanelCallback);
-    observerMediaPanel.observe(mediaPanel, mediaPanelConfig);
+    });
   }
 
   if (observerPlaylistMenu == null)
   {
-    const playlistMenu = document.getElementById('playlist-menu');
-    const playlistMenuConfig = { attributes: false, childList: true, subtree: true };
-    const playlistMenuCallback = function(mutationsList, observer)
+    observerPlaylistMenu = createObserver(document.getElementById('playlist-menu'), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
     {
       for(let mutation of mutationsList)
       {
@@ -1028,16 +1076,12 @@ function createObservers()
           break;
         }
       }
-    };
-    observerPlaylistMenu = new MutationObserver(playlistMenuCallback);
-    observerPlaylistMenu.observe(playlistMenu, playlistMenuConfig);
+    });
   }
 
   if (observerApp == null)
   {
-    const app = document.getElementById('app');
-    const appConfig = { attributes: true, childList: false, subtree: false };
-    const appCallback = function(mutationsList, observer)
+    observerApp = createObserver(document.getElementById('app'), { attributes: true, childList: false, subtree: false }, function(mutationsList, observer)
     {
       for(let mutation of mutationsList)
       {
@@ -1047,9 +1091,22 @@ function createObservers()
           break;
         }
       }
-    };
-    observerApp = new MutationObserver(appCallback);
-    observerApp.observe(app, appConfig);
+    });
+  }
+
+  if (observerDialogContainer == null)
+  {
+    observerDialogContainer = createObserver(document.getElementById('dialog-container'), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
+    {
+      for(let mutation of mutationsList)
+      {
+        if ((mutation.type == 'childList') && (mutation.target.id == 'dialog-media-update'))
+        {
+          createMediaUpdate();;
+          break;
+        }
+      }
+    });
   }
 }
 
@@ -1129,7 +1186,9 @@ function getAuthor(author)
   {
     author = author.substring(0, author.length - 3).trim();
   }
-  return author;
+  author = author.replace(" feat.", "×");
+  author = author.split("×")[0];
+  return author.trim();
 }
 
 async function getRandomPlaylist(playlists, randomIndexes, artistCount, maxArtist, cids)
@@ -1248,6 +1307,13 @@ async function djLeave()
   return await content.data;
 }
 
+async function mediaTag(cid)
+{
+  const response = await fetch('https://script.google.com/macros/s/AKfycbzGVC-_Y9ABtv9g7pxrZeKYl_oJxNX41P7tlxqfmnNZkVbVufa4/exec?cid=' + cid);
+  const json = await response.json();
+  return await json;
+}
+
 function getCids(myHistory, history)
 {
   let cids = [];
@@ -1287,7 +1353,7 @@ function getVisiblePlaylist()
   return getPlaylists().find(element => element.attributes.visible == true);
 }
 
-function skip()
+function skipTimerEvent()
 {
   const media = API.getMedia();
   if (skipAtLeave)
@@ -1303,7 +1369,7 @@ function skip()
       if (time <= 0)
       {
         djLeave();
-        skipAtTime = undefined;
+        skipAtTimer = undefined;
       }
       else
       {
@@ -1319,11 +1385,11 @@ function skip()
       if (time <= 0)
       {
         skipMe();
-        skipAtTime = undefined;
+        skipAtTimer = undefined;
       }
       else
       {
-        skipAtTimer = setTimeout(skip, time * 1000);
+        skipAtTimer = setTimeout(skipTimerEvent, time * 1000);
       }
     }
   }
@@ -1351,11 +1417,20 @@ function rescale()
       }
       else
       {
-        const fullscreenLayer = $("#fullscreen-layer");
-        if (fullscreenLayer.length)
+        ytFrame.css("transform", "scale(" + scale + ")");
+      }
+
+      const fullscreenLayer = $("#fullscreen-layer");
+      if (fullscreenLayer.length)
+      {
+        let height = fullscreenLayer.width() * 9 / 16;
+        if (fullscreenLayer.height() > height)
         {
-          let ratio = (fullscreenLayer.width() * 9 / 16) / fullscreenLayer.height();
-          ytFrame.css("transform", "scale(" + scale + ") scale(" + ratio + ")");
+          ytFrame.css("max-height", height).css("top", ($("#fullscreen-layer").height() - height) / 2);
+        }
+        else
+        {
+          ytFrame.css("max-height", "").css("top", "");
         }
       }
     }
@@ -1379,7 +1454,7 @@ function advance()
   const media = API.getMedia();
   if (media)
   {
-    let title = media.author + " - " + media.title;
+    let title = media.author + "\n" + media.title;
     
     if (media.author.trim() == "[Nolife]")
     {
@@ -1393,7 +1468,7 @@ function advance()
         if (title.includes(tag))
         {
           removeTag(tag);
-          title.replace(tag, "");
+          title = title.replace(tag, "");
           tempLogoIndex = nextLogoIndex = i;
           break;
         }
@@ -1403,7 +1478,7 @@ function advance()
           if (title.includes(tag))
           {
             removeTag(tag);
-            title.replace(tag, "");
+            title = title.replace(tag, "");
             tempLogoIndex = nextLogoIndex = i + logoTags.length;
             break;
           }
@@ -1425,7 +1500,7 @@ function advance()
         tag += match[3] + match[4];
       }
       tag += match[5];
-      title.replace(tag, "");
+      title = title.replace(tag, "");
       removeTag(tag);
       rescale();
     }
@@ -1462,29 +1537,69 @@ function advance()
         tag += match[5];
       }
 
-      title.replace(tag, "");
-      console.log(title);
+      title = title.replace(tag, "");
       removeTag(tag);
-      console.log(time, media.duration);
       if (time < media.duration)
       {
         if (API.getDJ().id == API.getUser().id)
         {
           time = time - API.getTimeElapsed();
-          console.log(time);
           skipAtId = media.id;
           skipAtTime = time;
           skipAtLeave = leave;
           if (time <= 0)
           {
-            skip();
+            skipTimerEvent();
           }
           else
           {
-            skipAtTimer = setTimeout(skip, time * 1000);
+            skipAtTimer = setTimeout(skipTimerEvent, time * 1000);
           }
         }
       }
+    }
+
+    exp = /.*(\[NL[BT]P ?)([1-9][0-9]+)?(\]).*/;
+    match = exp.exec(title);
+    if ((match != null) && (match.length == 4))
+    {
+      let tag = match[1];
+      panelNolifeRight = match[2];
+      if (match[2] == undefined)
+      {
+        panelNolifeRight = 125;
+      }
+      else
+      {
+        panelNolifeRight = match[2];
+        tag += match[2];
+      }
+      tag += match[3];
+      title = title.replace(tag, "");
+      removeTag(tag);
+      panelNolifeAuthor = replaceEntities(title.split("\n")[0]).trim();
+      panelNolifeTitle = replaceEntities(title.split("\n")[1]).trim();
+      panelNolifeTop = match[1].substr(3, 1) == "T";
+    
+      let time = API.getTimeElapsed();
+      if (time <= 10)
+      {
+        let panelNolife = $("#panel-nolife");
+        if (panelNolife)
+        {
+          panelNolife.remove();
+        }
+        panelNolifeDelay = 10 - time;
+      }
+      else
+      {
+        panelNolifeDelai = 0;
+      }
+    }
+    else
+    {
+      panelNolifeAuthor = "";
+      panelNolifeTitle = "";
     }
   }
   if (nextLogoIndex != logoIndex)
@@ -1492,6 +1607,7 @@ function advance()
     logoIndex = nextLogoIndex;
     logoNolifeTimerEvent();
   }
+  panelNolifeUpdate();
 }
 
 function enterRoom(room)
@@ -1534,6 +1650,46 @@ function changeLogo()
   path.eq(0).attr('style', 'fill: ' + ((logoIndex < logoEdges.length) ? logoEdges[logoIndex] : '#00000000'));
   path.eq(1).attr('style', 'fill: ' + ((logoIndex < logoLetters.length) ? logoLetters[logoIndex] : '#00000000'));
   path.eq(2).attr('style', 'fill: ' + ((logoIndex >= logoEdges.length) ? logoOldN[logoIndex - logoEdges.length] : '#00000000'));
+}
+
+function panelNolifeUpdate()
+{
+  let panelNolife = $("#panel-nolife");
+  if ((panelNolifeAuthor != "") && (panelNolifeTitle != ""))
+  {
+    const ytFrame = $("#yt-frame");
+    if (ytFrame.length == 0)
+    {
+      return;
+    }
+    if (panelNolife.length == 0)
+    {
+      panelNolife = $('<div id="panel-nolife" class="unselectable"><div class="title-nolife unselectable"></div><div class="author-nolife unselectable"></div><div class="author-front-nolife unselectable"></div></div>');
+      if (panelNolifeDelay)
+      {
+        panelNolife.css("animation-fill-mode", "forwards").css("animation-name", "unfade").css("animation-delay", panelNolifeDelay + "s").css("animation-duration", "1s").css("opacity", "0");
+      }
+      ytFrame.before(panelNolife);
+    }
+    panelNolife.css("transform", "scale(" + ytFrame.width() / 1920 + ")").css("right", ytFrame.width() * panelNolifeRight / 1920 + "px");
+    if (panelNolifeTop)
+    {
+      panelNolife.css("transform-origin", "4000px 0px").css("top", parseFloat(ytFrame.css('top')) + ytFrame.height() * 80 / 1080 + "px")
+    }
+    else
+    {
+      panelNolife.css("transform-origin", "4000px 60px").css("bottom", parseFloat(ytFrame.css('top')) + ytFrame.height() * 112 / 1080 + "px")
+    }
+    panelNolife.find('.title-nolife').text(panelNolifeTitle);
+    panelNolife.find('.author-nolife, .author-front-nolife').text(panelNolifeAuthor);
+  }
+  else
+  {
+    if (panelNolife.length != 0)
+    {
+      panelNolife.remove();
+    }
+  }
 }
 
 function logoNolifeTimerEvent()
@@ -1585,6 +1741,8 @@ function logoNolifeTimerEvent()
     const height = width / 3.0;
     
     const scale = width / 900.0;
+
+    top += parseFloat(ytFrame.css('top'));
 
     logoNolife.css('left', Math.floor(left) + 'px').css('top', Math.floor(top) + 'px').attr('width', Math.floor(width)).attr('height', Math.floor(height)).find('g').first().attr('transform', `scale(${scale})`);
     
@@ -1643,6 +1801,12 @@ let uninstall = function ()
     observerApp.disconnect();
     observerApp = null;
   }
+  if (observerDialogContainer != null)
+  {
+    observerDialogContainer.disconnect();
+    observerDialogContainer = null;
+  }
+
   if (logoTimer != undefined)
   {
     clearInterval(logoTimer);
