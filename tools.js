@@ -31,7 +31,7 @@ let resLogoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction
 
 const logoTags =     ["NLN",        "NLJ",      "NLO",       "NLVG",         "NLIN",      "NLF",       "NLID",      "NLJM",      "NLRG",         "NLC",       "NLRP"];
 
-const version = "1.3.4";
+const version = "1.3.6";
 const logoEdges    = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066",    "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66",    "#A6C19E66", "#96C2D066"];
 const logoLetters  = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6",    "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6",    "#F20A0EE6", "#FFFFFFE6"];
 const logoOldN     = [undefined,   undefined,   "#E8E8E8",   "#7BB5DD",      "#E5D3A3",   "#C1B3C0",   "#E8D3DC",   "#E48889",   "#8ACB87",      undefined,   undefined];
@@ -49,6 +49,9 @@ const tsvTypeExportNormal = "normal";
 const tsvTypeExportAdvanced = "advanced";
 
 let tsvExportColumns;
+let tsvImportNeedColumns;
+let tsvImportColumns;
+let tsvFileName;
 let tsvTypeExport;
 
 let observerMediaPanel;
@@ -73,7 +76,7 @@ let scale = "";
 let panelNolifeAuthor = "";
 let panelNolifeTitle = "";
 let panelNolifeTop = false;
-let panelNolifeRight = 125;
+let panelNolifeRight;
 let panelNolifeDelay = 0;
 
 function language_fr()
@@ -132,7 +135,7 @@ function createCSS()
 {
   if ($("#tools-extension-css").length == 0)
   {
-    const style = $('<style id="plugdj-tools-extension-css">.unselectable { pointer-events: none; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; } @keyframes unfade {from { opacity: 0.0; } to { opacity: 0.9; }} #panel-nolife { text-align: right; position: absolute; z-index: 10; width: 4000px; height: 60px; filter: blur(0.5px); opacity: 0.9;} .title-nolife { color: black; font-size: 32px; font-family: calibri; font-style: italic; font-weight: bold; no-letter-spacing: 0.25px; text-shadow: 2px 2px #AAA, 1px 1px #AAA; position: relative; height: 34px; } .author-nolife, .author-front-nolife { font-size: 26px; font-family: tahoma; font-weight: bold; letter-spacing: 0.25px; position: relative; height: 26px; } .author-nolife { color: black; -webkit-text-stroke: 8px black; } .author-front-nolife { color: white; top: -26px; -webkit-text-stroke: 1px black; } @keyframes fade {from { fill: #EEEEEE; } to { fill: transparent; }} #fullscreen-layer #yt-watermark svg { fill: transparent; animation-name: none; } #fullscreen-layer:hover #yt-watermark svg { fill: #EEEEEE; animation-fill-mode: forwards; animation-name: fade; animation-delay: 4s; animation-duration: 1s; } #fullscreen-layer #yt-watermark:hover svg { fill: #FFFFFF; animation-name: none; } #media-panel .row .item { position: relative; height: 55px; width: 30px; margin-right: 0px; cursor: pointer; } #media-panel .row .item.selected i { display: block; } #media-panel .row .item i { top: 17px; left: 5px; display: none; } #playlist-menu .container .item { position: relative; height: 48px; width: 30px; margin-right: 0px; cursor: pointer; } #playlist-menu .container .item.selected i { display: block; } #playlist-menu .container .item i { top: 17px; left: 5px; display: none; } #playlist-panel.playlist--override #playlist-menu .container .row { padding: 0 0 0 0; } #dialog-container #dialog-playlist-delete .dropdown.open #up { display: block; } #dialog-container #dialog-playlist-delete .dropdown #up { display: none; padding: 6px 10px; } #dialog-container #dialog-playlist-delete .dropdown.open #down { display: none; } #dialog-container #dialog-playlist-delete .dropdown #down { display: block; padding: 6px 10px; } @media (min-width: 1344px) and (min-height: 850px) { .community .community__playing-top { min-width: 824px; min-height: 464px; }} .playlist-buttons-content { flex-wrap: wrap; max-height: 50px; } .playlist-buttons-content .playlist-buttons-import-create, .playlist-buttons-content .playlist-buttons-import-export-tsv { margin-top: 4px; } .playlist-buttons-content .playlist-buttons-import-export-tsv { flex-grow: 1; display: flex; padding-right: 20px; justify-content: center; align-items: center; margin-top: 8px; } .playlist-buttons-content #playlist-import-tsv.button, .playlist-buttons-content #playlist-export-tsv.button { position: relative; bottom: auto; height: auto; width: 46%; margin: 0 2%; max-width: 120px; text-transform: uppercase; text-align: center; cursor: pointer; font-size: 12px; padding: 6px 15px; background: 0 0; border: 1px solid #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; opacity: .6; transition: all .3s; }  #playlist-import-tsv { left: 0; z-index: 50; background: #323742; } #playlist-export-tsv { right: 0; z-index: 55; background: #444a59; } .playlist-buttons-content #playlist-export-tsv.button:hover, .playlist-buttons-content #playlist-import-tsv.button:hover { opacity: 1; transition: all .3s; } .playlist-buttons-content #playlist-export-tsv.button i, .playlist-buttons-content #playlist-import-tsv.button i { top: auto; margin: 0 5px 0 0; font-size: 14px; } .playlist-buttons-content #playlist-create-tsv.button span, .playlist-buttons-content #playlist-import-tsv.button span { margin: 0; top: 0; } @media (min-width: 768px) { .playlist-buttons-content .playlist-buttons-import-export-tsv { padding-right: 0; }}</style>');
+    const style = $('<style id="plugdj-tools-extension-css">.community .community__playing-top { background-color: unset; } .unselectable { pointer-events: none; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; } @keyframes unfade {from { opacity: 0.0; } to { opacity: 0.9; }} #panel-nolife { text-align: right; position: absolute; z-index: 10; width: 4000px; height: 60px; opacity: 0.9;} .title-nolife { display: inline; color: black; font-size: 32px; font-family: calibri; font-style: italic; font-weight: bold; text-shadow: 2px 2px #AAA, 1px 1px #AAA; position: absolute; top: 0; right: 0; height: 34px; filter: blur(1px); } .author-nolife, .author-front-nolife { display: inline; font-size: 26px; font-family: tahoma; font-weight: bold; letter-spacing: 0.25px; position: absolute; right: 0; bottom: 0; height: 26px; filter: blur(1px); } .author-nolife { color: black; -webkit-text-stroke: 5px black; } .author-front-nolife { color: white; -webkit-text-stroke: 1px black; } @keyframes fade {from { fill: #EEEEEE; } to { fill: transparent; }} #fullscreen-layer #yt-watermark svg { fill: transparent; animation-name: none; } #fullscreen-layer:hover #yt-watermark svg { fill: #EEEEEE; animation-fill-mode: forwards; animation-name: fade; animation-delay: 4s; animation-duration: 1s; } #fullscreen-layer #yt-watermark:hover svg { fill: #FFFFFF; animation-name: none; } #media-panel .row .item { position: relative; height: 55px; width: 30px; margin-right: 0px; cursor: pointer; } #media-panel .row .item.selected i { display: block; } #media-panel .row .item i { top: 17px; left: 5px; display: none; } #playlist-menu .container .item { position: relative; height: 48px; width: 30px; margin-right: 0px; cursor: pointer; } #playlist-menu .container .item.selected i { display: block; } #playlist-menu .container .item i { top: 17px; left: 5px; display: none; } #playlist-panel.playlist--override #playlist-menu .container .row { padding: 0 0 0 0; } #dialog-container #dialog-playlist-delete .dropdown.open #up { display: block; } #dialog-container #dialog-playlist-delete .dropdown #up { display: none; padding: 6px 10px; } #dialog-container #dialog-playlist-delete .dropdown.open #down { display: none; } #dialog-container #dialog-playlist-delete .dropdown #down { display: block; padding: 6px 10px; } @media (min-width: 1344px) and (min-height: 850px) { .community .community__playing-top { min-width: 824px; min-height: 464px; }} .playlist-buttons-content { flex-wrap: wrap; max-height: 50px; } .playlist-buttons-content .playlist-buttons-import-create, .playlist-buttons-content .playlist-buttons-import-export-tsv { margin-top: 4px; } .playlist-buttons-content .playlist-buttons-import-export-tsv { flex-grow: 1; display: flex; padding-right: 20px; justify-content: center; align-items: center; margin-top: 8px; } .playlist-buttons-content #playlist-import-tsv.button, .playlist-buttons-content #playlist-export-tsv.button { position: relative; bottom: auto; height: auto; width: 46%; margin: 0 2%; max-width: 120px; text-transform: uppercase; text-align: center; cursor: pointer; font-size: 12px; padding: 6px 15px; background: 0 0; border: 1px solid #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; opacity: .6; transition: all .3s; }  #playlist-import-tsv { left: 0; z-index: 50; background: #323742; } #playlist-export-tsv { right: 0; z-index: 55; background: #444a59; } .playlist-buttons-content #playlist-export-tsv.button:hover, .playlist-buttons-content #playlist-import-tsv.button:hover { opacity: 1; transition: all .3s; } .playlist-buttons-content #playlist-export-tsv.button i, .playlist-buttons-content #playlist-import-tsv.button i { top: auto; margin: 0 5px 0 0; font-size: 14px; } .playlist-buttons-content #playlist-create-tsv.button span, .playlist-buttons-content #playlist-import-tsv.button span { margin: 0; top: 0; } @media (min-width: 768px) { .playlist-buttons-content .playlist-buttons-import-export-tsv { padding-right: 0; }}</style>');
     $('html > head').append(style);
   }
 }
@@ -281,6 +284,11 @@ function formatDate(date)
 function replaceEntities(string)
 {
   return string.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+}
+
+function replaceMacrons(string)
+{
+  return string.replace(/ā/g, "â").replace(/Ā/g, "Â").replace(/ē/g, "ê").replace(/Ē/g, "Ê").replace(/ī/g, "î").replace(/Ī/g, "Î").replace(/ō/g, "ô").replace(/Ō/g, "Ô").replace(/ū/g, "û").replace(/Ū/g, "Û");
 }
 
 function patchExport(data)
@@ -438,6 +446,7 @@ function createUserLogoBouncer()
         previousLogoIndex = logoIndex;
         changeLogo();
       }
+      panelNolifeUpdate();
       closeUserLogoPopup();
     }).mousedown(function(event)
     {
@@ -1565,20 +1574,15 @@ function advance()
     {
       let tag = match[1];
       panelNolifeRight = match[2];
-      if (match[2] == undefined)
+      if (match[2] != undefined)
       {
-        panelNolifeRight = 125;
-      }
-      else
-      {
-        panelNolifeRight = match[2];
         tag += match[2];
       }
       tag += match[3];
       title = title.replace(tag, "");
       removeTag(tag);
-      panelNolifeAuthor = replaceEntities(title.split("\n")[0]).trim();
-      panelNolifeTitle = replaceEntities(title.split("\n")[1]).trim();
+      panelNolifeAuthor = replaceMacrons(replaceEntities(title.split("\n")[0])).trim();
+      panelNolifeTitle = replaceMacrons(replaceEntities(title.split("\n")[1])).trim();
       panelNolifeTop = match[1].substr(3, 1) == "T";
     
       let time = API.getTimeElapsed();
@@ -1655,7 +1659,7 @@ function changeLogo()
 function panelNolifeUpdate()
 {
   let panelNolife = $("#panel-nolife");
-  if ((panelNolifeAuthor != "") && (panelNolifeTitle != ""))
+  if ((logoIndex > 0) && (panelNolifeAuthor != "") && (panelNolifeTitle != ""))
   {
     const ytFrame = $("#yt-frame");
     if (ytFrame.length == 0)
@@ -1671,7 +1675,24 @@ function panelNolifeUpdate()
       }
       ytFrame.before(panelNolife);
     }
-    panelNolife.css("transform", "scale(" + ytFrame.width() / 1920 + ")").css("right", ytFrame.width() * panelNolifeRight / 1920 + "px");
+
+    panelNolife.find('.title-nolife').text(panelNolifeTitle);
+    panelNolife.find('.author-nolife, .author-front-nolife').text(panelNolifeAuthor);
+
+    let right;
+    if (panelNolifeRight == undefined)
+    {
+      right = Math.floor(15 - 10 * (Math.min(518, Math.max(38, Math.max(panelNolife.find(".title-nolife").width(), panelNolife.find(".author-nolife").width()))) - 38) / (518 - 38)) * 25;
+      
+    }
+    else
+    {
+      right = panelNolifeRight;
+    }
+
+    console.log(panelNolife.find(".title-nolife").width(), panelNolife.find(".author-nolife").width(), right);
+
+    panelNolife.css("transform", "scale(" + ytFrame.width() / 1920 + ")").css("right", ytFrame.width() * right / 1920 + "px");
     if (panelNolifeTop)
     {
       panelNolife.css("transform-origin", "4000px 0px").css("top", parseFloat(ytFrame.css('top')) + ytFrame.height() * 80 / 1080 + "px")
@@ -1680,8 +1701,6 @@ function panelNolifeUpdate()
     {
       panelNolife.css("transform-origin", "4000px 60px").css("bottom", parseFloat(ytFrame.css('top')) + ytFrame.height() * 112 / 1080 + "px")
     }
-    panelNolife.find('.title-nolife').text(panelNolifeTitle);
-    panelNolife.find('.author-nolife, .author-front-nolife').text(panelNolifeAuthor);
   }
   else
   {
