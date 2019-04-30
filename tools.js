@@ -1690,8 +1690,6 @@ function panelNolifeUpdate()
       right = panelNolifeRight;
     }
 
-    console.log(panelNolife.find(".title-nolife").width(), panelNolife.find(".author-nolife").width(), right);
-
     panelNolife.css("transform", "scale(" + ytFrame.width() / 1920 + ")").css("right", ytFrame.width() * right / 1920 + "px");
     if (panelNolifeTop)
     {
