@@ -31,7 +31,7 @@ let resLogoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction
 
 const logoTags =     ["NLN",        "NLJ",      "NLO",       "NLVG",         "NLIN",      "NLF",       "NLID",      "NLJM",      "NLRG",         "NLC",       "NLRP"];
 
-const version = "1.3.6";
+const version = "1.3.7";
 const logoEdges    = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066",    "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66",    "#A6C19E66", "#96C2D066"];
 const logoLetters  = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6",    "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6",    "#F20A0EE6", "#FFFFFFE6"];
 const logoOldN     = [undefined,   undefined,   "#E8E8E8",   "#7BB5DD",      "#E5D3A3",   "#C1B3C0",   "#E8D3DC",   "#E48889",   "#8ACB87",      undefined,   undefined];
@@ -112,6 +112,20 @@ function language_fr()
   resLogoTitles  = ["Aucun", "Japon", "Autre", "Jeu vidéo", "Indies", "Fiction", "Idols", "J-Music", "Rétro Gaming", "Noël", "Jeu de rôle"];
 }
 
+function keydownDocument(event)
+{
+  if (event.which == 13)
+  {
+    $('#dialog-media-update .button.submit').mousedown();
+    $("#dialog-playlist-delete .button.submit").click();
+  }
+  else if (event.which == 27)
+  {
+    $("#dialog-playlist-delete .button.cancel").click();
+    $("#dialog-confirm .button.cancel").click();
+  }
+}
+
 function createAll()
 {
   const language = API.getUser().language;
@@ -128,6 +142,7 @@ function createAll()
   createObservers();
   if (logoIndex > 0) logoNolifeTimerEvent();
   API.on(API.ADVANCE, advance);
+  $(document).on("keydown", keydownDocument);
   enterRoom(document.getElementById("app").getAttribute("data-theme"));
 }
 
@@ -360,6 +375,16 @@ function createPlaylistsButtons()
   }
 }
 
+function updateMedia(author, title)
+{
+  $("#dialog-media-update input[name=author]").val(author);
+  $("#dialog-media-update input[name=title]").val(title);
+  if ((author != "") && (title != ""))
+  {
+    $("#dialog-media-update").removeClass("no-submit");
+  }
+}
+
 function createMediaUpdate()
 {
   let index = $("#media-panel .media-list.playlist-media .row .actions").parent().index() + Math.floor($("#media-panel .media-list.playlist-media .row").first().height() / 55) - 1;
@@ -375,8 +400,7 @@ function createMediaUpdate()
         if (data.status == "ok")
         {
           $(this).css("background-color", "#00c600");
-          $("#dialog-media-update input[name=author]").val(data.author);
-          $("#dialog-media-update input[name=title]").val(data.title);
+          updateMedia(data.author, data.title);
         }
         else
         {
@@ -387,10 +411,32 @@ function createMediaUpdate()
       const restore = $('<style scoped>.restore { position: absolute; background-color: #00c6ff; border-radius: 50%; right: 74px; top: 55px; width: 30px; height: 30px; cursor: pointer; } .restore i { left: 0; top: 0;} }</style><div class="restore"><i class="icon icon-refresh-video"></i></div>');
       restore.last().click(async function(event)
       {
-        $("#dialog-media-update input[name=author]").val(media.attributes.author);
-        $("#dialog-media-update input[name=title]").val(media.attributes.title);
+        updateMedia(media.attributes.author, media.attributes.title);
+      });
+      $("#dialog-media-update input[name=author], #dialog-media-update input[name=title]").off("keydown").keydown(function(event)
+      {
+        if (event.which == 27)
+        {
+          event.stopPropagation();
+          event.preventDefault();
+          $('#dialog-media-update .button.cancel').click();
+        }
       });
       $('#dialog-media-update .dialog-body').append(restore);
+      $('#dialog-media-update .button.submit').mousedown(function()
+      {
+        if (!$('#dialog-media-update').hasClass("no-submit"))
+        {
+          if ((media.attributes.cid == API.getMedia().cid) && (API.getDJ().id == API.getUser().id))
+          {
+            const media = API.getMedia();
+            media.author = $("#dialog-media-update input[name=author]").val();
+            media.title = $("#dialog-media-update input[name=title]").val();
+            console.log(media.author, media.title);
+            advanceMedia(media);
+          }
+        }
+      });
     }
   }
 }
@@ -552,13 +598,6 @@ function gearDialog(playlists, id, name, count, total)
   }).blur(function()
   {
     $(this).parent().removeClass("focused");
-  }).keydown(function(event)
-  {
-    if (event.which == 13)
-    {
-      event.preventDefault();
-      $("#dialog-playlist-delete .button.submit").click();
-    }
   }).keyup(function()
   {
     const maxTracks = parseInt($("#dialog-playlist-delete input[name=max-tracks]").val(), 10);
@@ -570,6 +609,14 @@ function gearDialog(playlists, id, name, count, total)
     else
     {
       $("#dialog-playlist-delete").addClass("no-submit");
+    }
+  }).keydown(function(event)
+  {
+    if (event.which == 27)
+    {
+      event.stopPropagation();
+      event.preventDefault();
+      $("#dialog-playlist-delete .button.cancel").click();
     }
   });
   $("#dialog-playlist-delete dt").click(function()
@@ -671,13 +718,6 @@ function clearAllDialog(id, name)
   }).blur(function()
   {
     $(this).parent().removeClass("focused");
-  }).keydown(function(event)
-  {
-    if (event.which == 13)
-    {
-      event.preventDefault();
-      $("#dialog-playlist-delete .button.submit").click();
-    }
   }).keyup(function()
   {
     if ($(this).val() == code)
@@ -687,6 +727,14 @@ function clearAllDialog(id, name)
     else
     {
       $("#dialog-playlist-delete").addClass("no-submit");
+    }
+  }).keydown(function(event)
+  {
+    if (event.which == 27)
+    {
+      event.stopPropagation();
+      event.preventDefault();
+      $("#dialog-playlist-delete .button.cancel").click();
     }
   });
 }
@@ -1448,6 +1496,11 @@ function rescale()
 
 function advance()
 {
+  advanceMedia(API.getMedia());
+}
+
+function advanceMedia(media)
+{
   if (skipAtTimer != undefined)
   {
      clearTimeout(skipAtTimer);
@@ -1460,7 +1513,6 @@ function advance()
 
   let nextLogoIndex = previousLogoIndex;
   tempLogoIndex = undefined;
-  const media = API.getMedia();
   if (media)
   {
     let title = media.author + "\n" + media.title;
@@ -1693,11 +1745,11 @@ function panelNolifeUpdate()
     panelNolife.css("transform", "scale(" + ytFrame.width() / 1920 + ")").css("right", ytFrame.width() * right / 1920 + "px");
     if (panelNolifeTop)
     {
-      panelNolife.css("transform-origin", "4000px 0px").css("top", parseFloat(ytFrame.css('top')) + ytFrame.height() * 80 / 1080 + "px")
+      panelNolife.css("transform-origin", "4000px 0px").css("top", parseFloat(ytFrame.css('top')) + ytFrame.height() * 80 / 1080 + "px").css("bottom", "");
     }
     else
     {
-      panelNolife.css("transform-origin", "4000px 60px").css("bottom", parseFloat(ytFrame.css('top')) + ytFrame.height() * 112 / 1080 + "px")
+      panelNolife.css("transform-origin", "4000px 60px").css("bottom", parseFloat(ytFrame.css('top')) + ytFrame.height() * 112 / 1080 + "px").css("top", "");
     }
   }
   else
@@ -1838,6 +1890,7 @@ let uninstall = function ()
   $(".user-logo-dropdown").parent().remove();
   $(".community__playing-controls").css("pointer-events", "");
   API.off(API.ADVANCE, advance);
+  $(document).off("keydown", keydownDocument);
 }
 return uninstall;
 })();
