@@ -31,7 +31,7 @@ let resLogoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction
 
 const logoTags =     ["NLN",        "NLJ",      "NLO",       "NLVG",         "NLIN",      "NLF",       "NLID",      "NLJM",      "NLRG",         "NLC",       "NLRP"];
 
-const version = "1.3.7";
+const version = "1.3.8";
 const logoEdges    = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066",    "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66",    "#A6C19E66", "#96C2D066"];
 const logoLetters  = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6",    "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6",    "#F20A0EE6", "#FFFFFFE6"];
 const logoOldN     = [undefined,   undefined,   "#E8E8E8",   "#7BB5DD",      "#E5D3A3",   "#C1B3C0",   "#E8D3DC",   "#E48889",   "#8ACB87",      undefined,   undefined];
@@ -116,7 +116,7 @@ function keydownDocument(event)
 {
   if (event.which == 13)
   {
-    $('#dialog-media-update .button.submit').mousedown();
+    $("#dialog-media-update .button.submit").mousedown();
     $("#dialog-playlist-delete .button.submit").click();
   }
   else if (event.which == 27)
@@ -148,10 +148,10 @@ function createAll()
 
 function createCSS()
 {
-  if ($("#tools-extension-css").length == 0)
+  if ($("#plugdj-tools-extension-css").length == 0)
   {
-    const style = $('<style id="plugdj-tools-extension-css">.community .community__playing-top { background-color: unset; } .unselectable { pointer-events: none; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; } @keyframes unfade {from { opacity: 0.0; } to { opacity: 0.9; }} #panel-nolife { text-align: right; position: absolute; z-index: 10; width: 4000px; height: 60px; opacity: 0.9;} .title-nolife { display: inline; color: black; font-size: 32px; font-family: calibri; font-style: italic; font-weight: bold; text-shadow: 2px 2px #AAA, 1px 1px #AAA; position: absolute; top: 0; right: 0; height: 34px; filter: blur(1px); } .author-nolife, .author-front-nolife { display: inline; font-size: 26px; font-family: tahoma; font-weight: bold; letter-spacing: 0.25px; position: absolute; right: 0; bottom: 0; height: 26px; filter: blur(1px); } .author-nolife { color: black; -webkit-text-stroke: 5px black; } .author-front-nolife { color: white; -webkit-text-stroke: 1px black; } @keyframes fade {from { fill: #EEEEEE; } to { fill: transparent; }} #fullscreen-layer #yt-watermark svg { fill: transparent; animation-name: none; } #fullscreen-layer:hover #yt-watermark svg { fill: #EEEEEE; animation-fill-mode: forwards; animation-name: fade; animation-delay: 4s; animation-duration: 1s; } #fullscreen-layer #yt-watermark:hover svg { fill: #FFFFFF; animation-name: none; } #media-panel .row .item { position: relative; height: 55px; width: 30px; margin-right: 0px; cursor: pointer; } #media-panel .row .item.selected i { display: block; } #media-panel .row .item i { top: 17px; left: 5px; display: none; } #playlist-menu .container .item { position: relative; height: 48px; width: 30px; margin-right: 0px; cursor: pointer; } #playlist-menu .container .item.selected i { display: block; } #playlist-menu .container .item i { top: 17px; left: 5px; display: none; } #playlist-panel.playlist--override #playlist-menu .container .row { padding: 0 0 0 0; } #dialog-container #dialog-playlist-delete .dropdown.open #up { display: block; } #dialog-container #dialog-playlist-delete .dropdown #up { display: none; padding: 6px 10px; } #dialog-container #dialog-playlist-delete .dropdown.open #down { display: none; } #dialog-container #dialog-playlist-delete .dropdown #down { display: block; padding: 6px 10px; } @media (min-width: 1344px) and (min-height: 850px) { .community .community__playing-top { min-width: 824px; min-height: 464px; }} .playlist-buttons-content { flex-wrap: wrap; max-height: 50px; } .playlist-buttons-content .playlist-buttons-import-create, .playlist-buttons-content .playlist-buttons-import-export-tsv { margin-top: 4px; } .playlist-buttons-content .playlist-buttons-import-export-tsv { flex-grow: 1; display: flex; padding-right: 20px; justify-content: center; align-items: center; margin-top: 8px; } .playlist-buttons-content #playlist-import-tsv.button, .playlist-buttons-content #playlist-export-tsv.button { position: relative; bottom: auto; height: auto; width: 46%; margin: 0 2%; max-width: 120px; text-transform: uppercase; text-align: center; cursor: pointer; font-size: 12px; padding: 6px 15px; background: 0 0; border: 1px solid #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; opacity: .6; transition: all .3s; }  #playlist-import-tsv { left: 0; z-index: 50; background: #323742; } #playlist-export-tsv { right: 0; z-index: 55; background: #444a59; } .playlist-buttons-content #playlist-export-tsv.button:hover, .playlist-buttons-content #playlist-import-tsv.button:hover { opacity: 1; transition: all .3s; } .playlist-buttons-content #playlist-export-tsv.button i, .playlist-buttons-content #playlist-import-tsv.button i { top: auto; margin: 0 5px 0 0; font-size: 14px; } .playlist-buttons-content #playlist-create-tsv.button span, .playlist-buttons-content #playlist-import-tsv.button span { margin: 0; top: 0; } @media (min-width: 768px) { .playlist-buttons-content .playlist-buttons-import-export-tsv { padding-right: 0; }}</style>');
-    $('html > head').append(style);
+    const style = $('<style id="plugdj-tools-extension-css">.community .community__playing-top { background-color: unset; } .unselectable { pointer-events: none; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; } @keyframes unfade {from { opacity: 0.0; } to { opacity: 1.0; }} #panel-nolife { text-align: right; position: absolute; z-index: 10; width: 4000px; height: 62px; opacity: 1.0;} .title-nolife { display: inline; color: black; font-size: 30px; font-family: calibri; font-style: italic; font-weight: bold; letter-spacing: 0.25px; text-shadow: 2px 2px #AAA, 1px 1px #AAA; position: absolute; top: 0; right: 0; height: 32px; } .author-nolife, .author-front-nolife { display: inline; font-size: 30px; font-family: calibri; font-weight: bold; letter-spacing: 0.5px; position: absolute; right: 0; bottom: 0; height: 30px; } .author-nolife { color: black; -webkit-text-stroke: 5px black; } .author-front-nolife { color: white; -webkit-text-stroke: 0.5px black; } @keyframes fade {from { fill: #EEEEEE; } to { fill: transparent; }} #fullscreen-layer #yt-watermark svg { fill: transparent; animation-name: none; } #fullscreen-layer:hover #yt-watermark svg { fill: #EEEEEE; animation-fill-mode: forwards; animation-name: fade; animation-delay: 4s; animation-duration: 1s; } #fullscreen-layer #yt-watermark:hover svg { fill: #FFFFFF; animation-name: none; } #media-panel .row .item { position: relative; height: 55px; width: 30px; margin-right: 0px; cursor: pointer; } #media-panel .row .item.selected i { display: block; } #media-panel .row .item i { top: 17px; left: 5px; display: none; } #playlist-menu .container .item { position: relative; height: 48px; width: 30px; margin-right: 0px; cursor: pointer; } #playlist-menu .container .item.selected i { display: block; } #playlist-menu .container .item i { top: 17px; left: 5px; display: none; } #playlist-panel.playlist--override #playlist-menu .container .row { padding: 0 0 0 0; } #dialog-container #dialog-playlist-delete .dropdown.open #up { display: block; } #dialog-container #dialog-playlist-delete .dropdown #up { display: none; padding: 6px 10px; } #dialog-container #dialog-playlist-delete .dropdown.open #down { display: none; } #dialog-container #dialog-playlist-delete .dropdown #down { display: block; padding: 6px 10px; } @media (min-width: 1344px) and (min-height: 850px) { .community .community__playing-top { min-width: 824px; min-height: 464px; }} .playlist-buttons-content { flex-wrap: wrap; max-height: 50px; } .playlist-buttons-content .playlist-buttons-import-create, .playlist-buttons-content .playlist-buttons-import-export-tsv { margin-top: 4px; } .playlist-buttons-content .playlist-buttons-import-export-tsv { flex-grow: 1; display: flex; padding-right: 20px; justify-content: center; align-items: center; margin-top: 8px; } .playlist-buttons-content #playlist-import-tsv.button, .playlist-buttons-content #playlist-export-tsv.button { position: relative; bottom: auto; height: auto; width: 46%; margin: 0 2%; max-width: 120px; text-transform: uppercase; text-align: center; cursor: pointer; font-size: 12px; padding: 6px 15px; background: 0 0; border: 1px solid #fff; border-radius: 20px; display: flex; justify-content: center; align-items: center; opacity: .6; transition: all .3s; }  #playlist-import-tsv { left: 0; z-index: 50; background: #323742; } #playlist-export-tsv { right: 0; z-index: 55; background: #444a59; } .playlist-buttons-content #playlist-export-tsv.button:hover, .playlist-buttons-content #playlist-import-tsv.button:hover { opacity: 1; transition: all .3s; } .playlist-buttons-content #playlist-export-tsv.button i, .playlist-buttons-content #playlist-import-tsv.button i { top: auto; margin: 0 5px 0 0; font-size: 14px; } .playlist-buttons-content #playlist-create-tsv.button span, .playlist-buttons-content #playlist-import-tsv.button span { margin: 0; top: 0; } @media (min-width: 768px) { .playlist-buttons-content .playlist-buttons-import-export-tsv { padding-right: 0; }}</style>');
+    $("html > head").append(style);
   }
 }
 
@@ -176,14 +176,14 @@ function createFullscreenLayer()
       
       let svg = $(this).find("svg");
       let newSvg = svg.clone();
-      newSvg.one('webkitAnimationEnd oanimationend msAnimationEnd animationend', function(event)
+      newSvg.one("webkitAnimationEnd oanimationend msAnimationEnd animationend", function(event)
       {
         $("#fullscreen-layer").css("cursor", "none");
       });
       svg.before(newSvg);
       svg.remove();
     });
-    const ytWatermark = $('<a id="yt-watermark" style="position: absolute; z-index: 10; right: 0; top: calc(100% - 58px); width: 142px; height: 58px" target="_blank" aria-label="Regarder sur www.youtube.com" href=""><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="26" version="1.1" viewBox="0 0 110 26" width="110" style="pointer-events: none; position: absolute; top: 16px; left: 16px;"><path d="M 16.68,.99 C 13.55,1.03 7.02,1.16 4.99,1.68 c -1.49,.4 -2.59,1.6 -2.99,3 -0.69,2.7 -0.68,8.31 -0.68,8.31 0,0 -0.01,5.61 .68,8.31 .39,1.5 1.59,2.6 2.99,3 2.69,.7 13.40,.68 13.40,.68 0,0 10.70,.01 13.40,-0.68 1.5,-0.4 2.59,-1.6 2.99,-3 .69,-2.7 .68,-8.31 .68,-8.31 0,0 .11,-5.61 -0.68,-8.31 -0.4,-1.5 -1.59,-2.6 -2.99,-3 C 29.11,.98 18.40,.99 18.40,.99 c 0,0 -0.67,-0.01 -1.71,0 z m 72.21,.90 0,21.28 2.78,0 .31,-1.37 .09,0 c .3,.5 .71,.88 1.21,1.18 .5,.3 1.08,.40 1.68,.40 1.1,0 1.99,-0.49 2.49,-1.59 .5,-1.1 .81,-2.70 .81,-4.90 l 0,-2.40 c 0,-1.6 -0.11,-2.90 -0.31,-3.90 -0.2,-0.89 -0.5,-1.59 -1,-2.09 -0.5,-0.4 -1.10,-0.59 -1.90,-0.59 -0.59,0 -1.18,.19 -1.68,.49 -0.49,.3 -1.01,.80 -1.21,1.40 l 0,-7.90 -3.28,0 z m -49.99,.78 3.90,13.90 .18,6.71 3.31,0 0,-6.71 3.87,-13.90 -3.37,0 -1.40,6.31 c -0.4,1.89 -0.71,3.19 -0.81,3.99 l -0.09,0 c -0.2,-1.1 -0.51,-2.4 -0.81,-3.99 l -1.37,-6.31 -3.40,0 z m 29.59,0 0,2.71 3.40,0 0,17.90 3.28,0 0,-17.90 3.40,0 c 0,0 .00,-2.71 -0.09,-2.71 l -9.99,0 z m -53.49,5.12 8.90,5.18 -8.90,5.09 0,-10.28 z m 89.40,.09 c -1.7,0 -2.89,.59 -3.59,1.59 -0.69,.99 -0.99,2.60 -0.99,4.90 l 0,2.59 c 0,2.2 .30,3.90 .99,4.90 .7,1.1 1.8,1.59 3.5,1.59 1.4,0 2.38,-0.3 3.18,-1 .7,-0.7 1.09,-1.69 1.09,-3.09 l 0,-0.5 -2.90,-0.21 c 0,1 -0.08,1.6 -0.28,2 -0.1,.4 -0.5,.62 -1,.62 -0.3,0 -0.61,-0.11 -0.81,-0.31 -0.2,-0.3 -0.30,-0.59 -0.40,-1.09 -0.1,-0.5 -0.09,-1.21 -0.09,-2.21 l 0,-0.78 5.71,-0.09 0,-2.62 c 0,-1.6 -0.10,-2.78 -0.40,-3.68 -0.2,-0.89 -0.71,-1.59 -1.31,-1.99 -0.7,-0.4 -1.48,-0.59 -2.68,-0.59 z m -50.49,.09 c -1.09,0 -2.01,.18 -2.71,.68 -0.7,.4 -1.2,1.12 -1.49,2.12 -0.3,1 -0.5,2.27 -0.5,3.87 l 0,2.21 c 0,1.5 .10,2.78 .40,3.78 .2,.9 .70,1.62 1.40,2.12 .69,.5 1.71,.68 2.81,.78 1.19,0 2.08,-0.28 2.78,-0.68 .69,-0.4 1.09,-1.09 1.49,-2.09 .39,-1 .49,-2.30 .49,-3.90 l 0,-2.21 c 0,-1.6 -0.2,-2.87 -0.49,-3.87 -0.3,-0.89 -0.8,-1.62 -1.49,-2.12 -0.7,-0.5 -1.58,-0.68 -2.68,-0.68 z m 12.18,.09 0,11.90 c -0.1,.3 -0.29,.48 -0.59,.68 -0.2,.2 -0.51,.31 -0.81,.31 -0.3,0 -0.58,-0.10 -0.68,-0.40 -0.1,-0.3 -0.18,-0.70 -0.18,-1.40 l 0,-10.99 -3.40,0 0,11.21 c 0,1.4 .18,2.39 .68,3.09 .49,.7 1.21,1 2.21,1 1.4,0 2.48,-0.69 3.18,-2.09 l .09,0 .31,1.78 2.59,0 0,-14.99 c 0,0 -3.40,.00 -3.40,-0.09 z m 17.31,0 0,11.90 c -0.1,.3 -0.29,.48 -0.59,.68 -0.2,.2 -0.51,.31 -0.81,.31 -0.3,0 -0.58,-0.10 -0.68,-0.40 -0.1,-0.3 -0.21,-0.70 -0.21,-1.40 l 0,-10.99 -3.40,0 0,11.21 c 0,1.4 .21,2.39 .71,3.09 .5,.7 1.18,1 2.18,1 1.39,0 2.51,-0.69 3.21,-2.09 l .09,0 .28,1.78 2.62,0 0,-14.99 c 0,0 -3.40,.00 -3.40,-0.09 z m 20.90,2.09 c .4,0 .58,.11 .78,.31 .2,.3 .30,.59 .40,1.09 .1,.5 .09,1.21 .09,2.21 l 0,1.09 -2.5,0 0,-1.09 c 0,-1 -0.00,-1.71 .09,-2.21 0,-0.4 .11,-0.8 .31,-1 .2,-0.3 .51,-0.40 .81,-0.40 z m -50.49,.12 c .5,0 .8,.18 1,.68 .19,.5 .28,1.30 .28,2.40 l 0,4.68 c 0,1.1 -0.08,1.90 -0.28,2.40 -0.2,.5 -0.5,.68 -1,.68 -0.5,0 -0.79,-0.18 -0.99,-0.68 -0.2,-0.5 -0.31,-1.30 -0.31,-2.40 l 0,-4.68 c 0,-1.1 .11,-1.90 .31,-2.40 .2,-0.5 .49,-0.68 .99,-0.68 z m 39.68,.09 c .3,0 .61,.10 .81,.40 .2,.3 .27,.67 .37,1.37 .1,.6 .12,1.51 .12,2.71 l .09,1.90 c 0,1.1 .00,1.99 -0.09,2.59 -0.1,.6 -0.19,1.08 -0.49,1.28 -0.2,.3 -0.50,.40 -0.90,.40 -0.3,0 -0.51,-0.08 -0.81,-0.18 -0.2,-0.1 -0.39,-0.29 -0.59,-0.59 l 0,-8.5 c .1,-0.4 .29,-0.7 .59,-1 .3,-0.3 .60,-0.40 .90,-0.40 z"></path></svg></a>');
+    const ytWatermark = $('<a id="yt-watermark" style="position: absolute; z-index: 10; width: 142px; height: 58px" target="_blank" aria-label="Regarder sur www.youtube.com" href=""><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="26" version="1.1" viewBox="0 0 110 26" width="110" style="pointer-events: none; position: absolute; top: 16px; left: 16px;"><path d="M 16.68,.99 C 13.55,1.03 7.02,1.16 4.99,1.68 c -1.49,.4 -2.59,1.6 -2.99,3 -0.69,2.7 -0.68,8.31 -0.68,8.31 0,0 -0.01,5.61 .68,8.31 .39,1.5 1.59,2.6 2.99,3 2.69,.7 13.40,.68 13.40,.68 0,0 10.70,.01 13.40,-0.68 1.5,-0.4 2.59,-1.6 2.99,-3 .69,-2.7 .68,-8.31 .68,-8.31 0,0 .11,-5.61 -0.68,-8.31 -0.4,-1.5 -1.59,-2.6 -2.99,-3 C 29.11,.98 18.40,.99 18.40,.99 c 0,0 -0.67,-0.01 -1.71,0 z m 72.21,.90 0,21.28 2.78,0 .31,-1.37 .09,0 c .3,.5 .71,.88 1.21,1.18 .5,.3 1.08,.40 1.68,.40 1.1,0 1.99,-0.49 2.49,-1.59 .5,-1.1 .81,-2.70 .81,-4.90 l 0,-2.40 c 0,-1.6 -0.11,-2.90 -0.31,-3.90 -0.2,-0.89 -0.5,-1.59 -1,-2.09 -0.5,-0.4 -1.10,-0.59 -1.90,-0.59 -0.59,0 -1.18,.19 -1.68,.49 -0.49,.3 -1.01,.80 -1.21,1.40 l 0,-7.90 -3.28,0 z m -49.99,.78 3.90,13.90 .18,6.71 3.31,0 0,-6.71 3.87,-13.90 -3.37,0 -1.40,6.31 c -0.4,1.89 -0.71,3.19 -0.81,3.99 l -0.09,0 c -0.2,-1.1 -0.51,-2.4 -0.81,-3.99 l -1.37,-6.31 -3.40,0 z m 29.59,0 0,2.71 3.40,0 0,17.90 3.28,0 0,-17.90 3.40,0 c 0,0 .00,-2.71 -0.09,-2.71 l -9.99,0 z m -53.49,5.12 8.90,5.18 -8.90,5.09 0,-10.28 z m 89.40,.09 c -1.7,0 -2.89,.59 -3.59,1.59 -0.69,.99 -0.99,2.60 -0.99,4.90 l 0,2.59 c 0,2.2 .30,3.90 .99,4.90 .7,1.1 1.8,1.59 3.5,1.59 1.4,0 2.38,-0.3 3.18,-1 .7,-0.7 1.09,-1.69 1.09,-3.09 l 0,-0.5 -2.90,-0.21 c 0,1 -0.08,1.6 -0.28,2 -0.1,.4 -0.5,.62 -1,.62 -0.3,0 -0.61,-0.11 -0.81,-0.31 -0.2,-0.3 -0.30,-0.59 -0.40,-1.09 -0.1,-0.5 -0.09,-1.21 -0.09,-2.21 l 0,-0.78 5.71,-0.09 0,-2.62 c 0,-1.6 -0.10,-2.78 -0.40,-3.68 -0.2,-0.89 -0.71,-1.59 -1.31,-1.99 -0.7,-0.4 -1.48,-0.59 -2.68,-0.59 z m -50.49,.09 c -1.09,0 -2.01,.18 -2.71,.68 -0.7,.4 -1.2,1.12 -1.49,2.12 -0.3,1 -0.5,2.27 -0.5,3.87 l 0,2.21 c 0,1.5 .10,2.78 .40,3.78 .2,.9 .70,1.62 1.40,2.12 .69,.5 1.71,.68 2.81,.78 1.19,0 2.08,-0.28 2.78,-0.68 .69,-0.4 1.09,-1.09 1.49,-2.09 .39,-1 .49,-2.30 .49,-3.90 l 0,-2.21 c 0,-1.6 -0.2,-2.87 -0.49,-3.87 -0.3,-0.89 -0.8,-1.62 -1.49,-2.12 -0.7,-0.5 -1.58,-0.68 -2.68,-0.68 z m 12.18,.09 0,11.90 c -0.1,.3 -0.29,.48 -0.59,.68 -0.2,.2 -0.51,.31 -0.81,.31 -0.3,0 -0.58,-0.10 -0.68,-0.40 -0.1,-0.3 -0.18,-0.70 -0.18,-1.40 l 0,-10.99 -3.40,0 0,11.21 c 0,1.4 .18,2.39 .68,3.09 .49,.7 1.21,1 2.21,1 1.4,0 2.48,-0.69 3.18,-2.09 l .09,0 .31,1.78 2.59,0 0,-14.99 c 0,0 -3.40,.00 -3.40,-0.09 z m 17.31,0 0,11.90 c -0.1,.3 -0.29,.48 -0.59,.68 -0.2,.2 -0.51,.31 -0.81,.31 -0.3,0 -0.58,-0.10 -0.68,-0.40 -0.1,-0.3 -0.21,-0.70 -0.21,-1.40 l 0,-10.99 -3.40,0 0,11.21 c 0,1.4 .21,2.39 .71,3.09 .5,.7 1.18,1 2.18,1 1.39,0 2.51,-0.69 3.21,-2.09 l .09,0 .28,1.78 2.62,0 0,-14.99 c 0,0 -3.40,.00 -3.40,-0.09 z m 20.90,2.09 c .4,0 .58,.11 .78,.31 .2,.3 .30,.59 .40,1.09 .1,.5 .09,1.21 .09,2.21 l 0,1.09 -2.5,0 0,-1.09 c 0,-1 -0.00,-1.71 .09,-2.21 0,-0.4 .11,-0.8 .31,-1 .2,-0.3 .51,-0.40 .81,-0.40 z m -50.49,.12 c .5,0 .8,.18 1,.68 .19,.5 .28,1.30 .28,2.40 l 0,4.68 c 0,1.1 -0.08,1.90 -0.28,2.40 -0.2,.5 -0.5,.68 -1,.68 -0.5,0 -0.79,-0.18 -0.99,-0.68 -0.2,-0.5 -0.31,-1.30 -0.31,-2.40 l 0,-4.68 c 0,-1.1 .11,-1.90 .31,-2.40 .2,-0.5 .49,-0.68 .99,-0.68 z m 39.68,.09 c .3,0 .61,.10 .81,.40 .2,.3 .27,.67 .37,1.37 .1,.6 .12,1.51 .12,2.71 l .09,1.90 c 0,1.1 .00,1.99 -0.09,2.59 -0.1,.6 -0.19,1.08 -0.49,1.28 -0.2,.3 -0.50,.40 -0.90,.40 -0.3,0 -0.51,-0.08 -0.81,-0.18 -0.2,-0.1 -0.39,-0.29 -0.59,-0.59 l 0,-8.5 c .1,-0.4 .29,-0.7 .59,-1 .3,-0.3 .60,-0.40 .90,-0.40 z"></path></svg></a>');
     ytWatermark.click(function()
     {
       const media = API.getMedia();
@@ -199,10 +199,10 @@ function createFullscreenLayer()
         $(this).attr("href", `https://www.youtube.com/watch?v=${media.cid}`);
       }
     });
-    $('#yt-frame').before(fullscreenLayer.append(ytWatermark));
+    $("#yt-frame").before(fullscreenLayer.append(ytWatermark));
     $(".community__playing-controls").css("pointer-events", "none");
     $(".community__playing-top-buttons").css("pointer-events", "auto");
-    document.getElementById('yt-resize-frame').contentWindow.addEventListener('resize', function()
+    document.getElementById("yt-resize-frame").contentWindow.addEventListener("resize", function()
     {
       rescale();
       logoNolifeTimerEvent();
@@ -298,12 +298,22 @@ function formatDate(date)
 
 function replaceEntities(string)
 {
-  return string.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+  return string.replace(/&quot;/g, '"').replace(/&amp;/g, "&");
 }
 
 function replaceMacrons(string)
 {
   return string.replace(/ā/g, "â").replace(/Ā/g, "Â").replace(/ē/g, "ê").replace(/Ē/g, "Ê").replace(/ī/g, "î").replace(/Ī/g, "Î").replace(/ō/g, "ô").replace(/Ō/g, "Ô").replace(/ū/g, "û").replace(/Ū/g, "Û");
+}
+
+function replaceArobas(string)
+{
+  return string.replace(/＠/g, "@");
+}
+
+function replaceSlashs(string)
+{
+  return string.replace(/⧸/g, "/");
 }
 
 function patchExport(data)
@@ -314,8 +324,8 @@ function patchExport(data)
     {
       data.image = "";
     }
-    data.title = replaceEntities(data.title);
-    data.author = replaceEntities(data.author);
+    data.title = replaceArobas(replaceSlashs(replaceEntities(data.title)));
+    data.author = replaceArobas(replaceSlashs(replaceEntities(data.author)));
   });
   return data;
 }
@@ -407,31 +417,53 @@ function createMediaUpdate()
           $(this).css("background-color", "#c60000");
         }
       });
-      $('#dialog-media-update .dialog-body').append(tag);
+      $("#dialog-media-update .dialog-body").append(tag);
       const restore = $('<style scoped>.restore { position: absolute; background-color: #00c6ff; border-radius: 50%; right: 74px; top: 55px; width: 30px; height: 30px; cursor: pointer; } .restore i { left: 0; top: 0;} }</style><div class="restore"><i class="icon icon-refresh-video"></i></div>');
       restore.last().click(async function(event)
       {
         updateMedia(media.attributes.author, media.attributes.title);
       });
+      $("#dialog-media-update .dialog-body").append(restore);
+      
+      function replace(string)
+      {
+        return string.replace(/＠/g, "@").replace(/⧸/g, "/");
+      }
+
+      const author = $("#dialog-media-update input[name=author]");
+      const title = $("#dialog-media-update input[name=title]");
+      author.val(replace(author.val()));
+      title.val(replace(title.val()));
+      title.prop("maxlength", "256");
+
       $("#dialog-media-update input[name=author], #dialog-media-update input[name=title]").off("keydown").keydown(function(event)
       {
         if (event.which == 27)
         {
           event.stopPropagation();
           event.preventDefault();
-          $('#dialog-media-update .button.cancel').click();
+          $("#dialog-media-update .button.cancel").click();
         }
       });
-      $('#dialog-media-update .dialog-body').append(restore);
-      $('#dialog-media-update .button.submit').mousedown(function()
+      $("#dialog-media-update .button.submit").mousedown(function()
       {
-        if (!$('#dialog-media-update').hasClass("no-submit"))
+        if (!$("#dialog-media-update").hasClass("no-submit"))
         {
+          function replace(string)
+          {
+            return string.replace(/@/g, "＠").replace(/\//g, "⧸");
+          }
+
+          const author = $("#dialog-media-update input[name=author]");
+          const title = $("#dialog-media-update input[name=title]");
+          author.val(replace(author.val()));
+          title.val(replace(title.val()));
+          
           if ((media.attributes.cid == API.getMedia().cid) && (API.getDJ().id == API.getUser().id))
           {
             const media = API.getMedia();
-            media.author = $("#dialog-media-update input[name=author]").val();
-            media.title = $("#dialog-media-update input[name=title]").val();
+            media.author = author.val();
+            media.title = title.val();
             console.log(media.author, media.title);
             advanceMedia(media);
           }
@@ -478,7 +510,7 @@ function createUserLogoBouncer()
     }
     popover += '</ul></div></div>';
     popover = $(popover);
-    popover.find('li').click(function()
+    popover.find("li").click(function()
     {
       logoIndex = $(this).index();
       if (logoIndex >= logoLetters.length)
@@ -505,12 +537,14 @@ function createUserLogoBouncer()
 
 function createPlaylistButton(id, fa, click)
 {
-  if ($(`#playlist-${id}-button`).length == 0)
+  let button = $(`#playlist-${id}-button`);
+  if (button.length == 0)
   {
-    const button = $(`<div id="playlist-${id}-button" class="button"><i class="fa fa-${fa}"></i></div>`);
+    button = $(`<div id="playlist-${id}-button" class="button"><i class="fa fa-${fa}"></i></div>`);
     button.click(click);
     $("#media-panel .playlist-buttons-container .playlist-edit-group").prepend(button);
   }
+  return button;
 }
 
 async function gear(playlists, id, initialCount, max, appendMode, maxArtist, checkMyHistory, checkHistory)
@@ -1007,7 +1041,7 @@ function createMediasCheckboxes()
   {
     if (index == 0)
     {
-      if ($(this).prop('class') == "row")
+      if ($(this).prop("class") == "row")
       {
         offsetIndex = Math.floor($(this).height() / 55) - 1;
       }
@@ -1096,11 +1130,11 @@ function createObservers()
 {
   if (observerMediaPanel == null)
   {
-    observerMediaPanel = createObserver(document.getElementById('media-panel'), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
+    observerMediaPanel = createObserver(document.getElementById("media-panel"), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
     {
       for(let mutation of mutationsList)
       {
-        if ((mutation.type == 'childList') && (mutation.target.className == "header no-icon"))
+        if ((mutation.type == "childList") && (mutation.target.className == "header no-icon"))
         {
           createPlaylistButtons();
           break;
@@ -1112,7 +1146,7 @@ function createObservers()
       }
       for(let mutation of mutationsList)
       {
-        if ((mutation.type == 'childList') && (mutation.target.className.startsWith("row playlist-media-")))
+        if ((mutation.type == "childList") && (mutation.target.className.startsWith("row playlist-media-")))
         {
           createMediasCheckboxes();
           break;
@@ -1123,11 +1157,11 @@ function createObservers()
 
   if (observerPlaylistMenu == null)
   {
-    observerPlaylistMenu = createObserver(document.getElementById('playlist-menu'), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
+    observerPlaylistMenu = createObserver(document.getElementById("playlist-menu"), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
     {
       for(let mutation of mutationsList)
       {
-        if ((mutation.type == 'childList') && (mutation.target.className == "row"))
+        if ((mutation.type == "childList")  && (mutation.target.className.startsWith("row")))
         {
           createPlaylistsCheckboxes();
           break;
@@ -1138,11 +1172,11 @@ function createObservers()
 
   if (observerApp == null)
   {
-    observerApp = createObserver(document.getElementById('app'), { attributes: true, childList: false, subtree: false }, function(mutationsList, observer)
+    observerApp = createObserver(document.getElementById("app"), { attributes: true, childList: false, subtree: false }, function(mutationsList, observer)
     {
       for(let mutation of mutationsList)
       {
-        if ((mutation.type == 'attributes') && (mutation.attributeName == 'data-theme'))
+        if ((mutation.type == "attributes") && (mutation.attributeName == "data-theme"))
         {
           enterRoom(app.getAttribute(mutation.attributeName));
           break;
@@ -1153,11 +1187,11 @@ function createObservers()
 
   if (observerDialogContainer == null)
   {
-    observerDialogContainer = createObserver(document.getElementById('dialog-container'), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
+    observerDialogContainer = createObserver(document.getElementById("dialog-container"), { attributes: false, childList: true, subtree: true }, function(mutationsList, observer)
     {
       for(let mutation of mutationsList)
       {
-        if ((mutation.type == 'childList') && (mutation.target.id == 'dialog-media-update'))
+        if ((mutation.type == "childList") && (mutation.target.id == "dialog-media-update"))
         {
           createMediaUpdate();;
           break;
@@ -1364,9 +1398,18 @@ async function djLeave()
   return await content.data;
 }
 
-async function mediaTag(cid)
+async function mediaTag(cids)
 {
-  const response = await fetch('https://script.google.com/macros/s/AKfycbzGVC-_Y9ABtv9g7pxrZeKYl_oJxNX41P7tlxqfmnNZkVbVufa4/exec?cid=' + cid);
+  let url = 'https://script.google.com/macros/s/AKfycbzGVC-_Y9ABtv9g7pxrZeKYl_oJxNX41P7tlxqfmnNZkVbVufa4/exec?ver=v1&';
+  if (Array.isArray(cids))
+  {
+    url += 'cids=' + cids.join(',');
+  }
+  else
+  {
+    url += 'cid=' + cids;
+  }
+  const response = await fetch(url);
   const json = await response.json();
   return await json;
 }
@@ -1418,7 +1461,7 @@ function skipTimerEvent()
     if ((API.getDJ().id != API.getUser().id) || (media == undefined) || (media.id != skipAtId))
     {
       djLeave();
-      skipAtTime = undefined;
+      skipAtTimer = undefined;
     }
     else
     {
@@ -1449,12 +1492,16 @@ function skipTimerEvent()
         skipAtTimer = setTimeout(skipTimerEvent, time * 1000);
       }
     }
+    else
+    {
+      skipAtTimer = undefined;
+    }
   }
 }
 
 function rescale()
 {
-  const communityPlayingTop = $('.community__playing-top');
+  const communityPlayingTop = $(".community__playing-top");
   if (communityPlayingTop.length)
   {
     if (scale == "")
@@ -1465,7 +1512,7 @@ function rescale()
     {
       communityPlayingTop.css("overflow", "hidden");
     }
-    const ytFrame = $('#yt-frame');
+    const ytFrame = $("#yt-frame");
     if (ytFrame.length)
     {
       if (scale == "")
@@ -1483,13 +1530,15 @@ function rescale()
         let height = fullscreenLayer.width() * 9 / 16;
         if (fullscreenLayer.height() > height)
         {
-          ytFrame.css("max-height", height).css("top", ($("#fullscreen-layer").height() - height) / 2);
+          ytFrame.css("max-height", height).css("top", ($("#fullscreen-layer").height() - height) / 2).css("max-width", "").css("left", "");
         }
         else
         {
-          ytFrame.css("max-height", "").css("top", "");
+          let width = fullscreenLayer.height() * 16 / 9;
+          ytFrame.css("max-width", width).css("left", ($("#fullscreen-layer").width() - width) / 2).css("max-height", "").css("top", "");
         }
       }
+      $("#yt-watermark").css("right", parseFloat(ytFrame.css("left")) + "px").css("bottom", parseFloat(ytFrame.css("top")) + "px").css("display", (API.getMedia() && API.getMedia().format == 1) ? "block" : "none");
     }
   }
 }
@@ -1510,6 +1559,7 @@ function advanceMedia(media)
      }
      skipAtTimer = undefined;
   }
+  skipAtTime = undefined;
 
   let nextLogoIndex = previousLogoIndex;
   tempLogoIndex = undefined;
@@ -1602,11 +1652,11 @@ function advanceMedia(media)
       removeTag(tag);
       if (time < media.duration)
       {
+        skipAtTime = time;
         if (API.getDJ().id == API.getUser().id)
         {
           time = time - API.getTimeElapsed();
           skipAtId = media.id;
-          skipAtTime = time;
           skipAtLeave = leave;
           if (time <= 0)
           {
@@ -1633,9 +1683,14 @@ function advanceMedia(media)
       tag += match[3];
       title = title.replace(tag, "");
       removeTag(tag);
-      panelNolifeAuthor = replaceMacrons(replaceEntities(title.split("\n")[0])).trim();
-      panelNolifeTitle = replaceMacrons(replaceEntities(title.split("\n")[1])).trim();
+      panelNolifeAuthor = replaceSlashs(replaceArobas(replaceMacrons(replaceEntities(title.split("\n")[0])))).trim();
+      panelNolifeTitle = replaceSlashs(replaceArobas(replaceMacrons(replaceEntities(title.split("\n")[1])))).trim();
       panelNolifeTop = match[1].substr(3, 1) == "T";
+    }
+    else
+    {
+      panelNolifeAuthor = "";
+      panelNolifeTitle = "";
     
       let time = API.getTimeElapsed();
       if (time <= 10)
@@ -1652,11 +1707,6 @@ function advanceMedia(media)
         panelNolifeDelai = 0;
       }
     }
-    else
-    {
-      panelNolifeAuthor = "";
-      panelNolifeTitle = "";
-    }
   }
   if (nextLogoIndex != logoIndex)
   {
@@ -1664,6 +1714,7 @@ function advanceMedia(media)
     logoNolifeTimerEvent();
   }
   panelNolifeUpdate();
+  replaceForbiddenChars();
 }
 
 function enterRoom(room)
@@ -1694,6 +1745,14 @@ function removeTag(tag)
   });
 }
 
+function replaceForbiddenChars()
+{
+  $(".community__song-playing").each(function(index, element)
+  {
+    $(this).html(replaceSlashs(replaceArobas($(this).html())));
+  });
+}
+
 function iconNolife(logoIndex, style, width, height)
 {
   return `<svg width="${width}" height="${height}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ${style}><g transform="scale(${width / 320.0})"><path style="fill: ${(logoIndex < logoEdges.length) ? logoEdges[logoIndex] : '#00000000'}" d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A22,22,0,0,1,190,0 L239,0 A22,22,0,0,1,261,22L261,100 L298,100 A22,22,0,0,1,319,124 L319,170 L320,227 A22,22,0,0,1,298,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L304 215 L287,173 Z" /><path style="fill: ${(logoIndex < logoLetters.length) ? logoLetters[logoIndex] : '#00000000'}" d="M 85,185 L287,173 L304 215 L102,227 Z M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M189,26 L232,25 L234,117 A7,7,0,0,0,241,124 L295,123 L296,155 L228,156 A37,37,0,0,1,192,119Z" /></g><g transform="scale(${width / 90.0})"><path style="fill: ${(logoIndex >= logoEdges.length) ? logoOldN[logoIndex - logoEdges.length] : '#00000000'}" d="M 21.84375,11.28125 C 16.944888,11.386012 13,15.272829 13,21.6875 L 13,61.5 C 13,67.871 18.129,73 24.5,73 l 261,0 0,-8.09375 -256,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 L 23,26.6875 C 23,23.363033 26.065793,22.616877 28.3125,26 L 45.5,51.90625 C 54.510486,65.474365 67,61.87387 67,48 l 0,-36 -10,0 0,31 c 0,3.835577 -3.236752,4.375503 -5.8125,0.6875 L 33.59375,18.5 c -3.559047,-5.095908 -7.939774,-7.300232 -11.75,-7.21875 z" /></g></svg>`;
@@ -1718,12 +1777,24 @@ function panelNolifeUpdate()
     {
       return;
     }
+
+    let time = API.getTimeElapsed();
+    let delai = 0;
+    if (time <= 10)
+    {
+      if (panelNolife.length != 0)
+      {
+        panelNolife.remove();
+        panelNolife = $("#panel-nolife");
+      }
+      delai = 10 - time;
+    }
     if (panelNolife.length == 0)
     {
       panelNolife = $('<div id="panel-nolife" class="unselectable"><div class="title-nolife unselectable"></div><div class="author-nolife unselectable"></div><div class="author-front-nolife unselectable"></div></div>');
-      if (panelNolifeDelay)
+      if (delai)
       {
-        panelNolife.css("animation-fill-mode", "forwards").css("animation-name", "unfade").css("animation-delay", panelNolifeDelay + "s").css("animation-duration", "1s").css("opacity", "0");
+        panelNolife.css("animation-fill-mode", "forwards").css("animation-name", "unfade").css("animation-delay", delai + "s").css("animation-duration", "1s").css("opacity", "0");
       }
       ytFrame.before(panelNolife);
     }
@@ -1742,14 +1813,14 @@ function panelNolifeUpdate()
       right = panelNolifeRight;
     }
 
-    panelNolife.css("transform", "scale(" + ytFrame.width() / 1920 + ")").css("right", ytFrame.width() * right / 1920 + "px");
+    panelNolife.css("transform", "scale(" + ytFrame.width() / 1920 + ")").css("right", parseFloat(ytFrame.css('left')) + ytFrame.width() * right / 1920 + "px");
     if (panelNolifeTop)
     {
-      panelNolife.css("transform-origin", "4000px 0px").css("top", parseFloat(ytFrame.css('top')) + ytFrame.height() * 80 / 1080 + "px").css("bottom", "");
+      panelNolife.css("transform-origin", "4000px 0px").css("top", parseFloat(ytFrame.css('top')) + ytFrame.height() * 76 / 1080 + "px").css("bottom", "");
     }
     else
     {
-      panelNolife.css("transform-origin", "4000px 60px").css("bottom", parseFloat(ytFrame.css('top')) + ytFrame.height() * 112 / 1080 + "px").css("top", "");
+      panelNolife.css("transform-origin", "4000px 62px").css("bottom", parseFloat(ytFrame.css('top')) + ytFrame.height() * 116 / 1080 + "px").css("top", "");
     }
   }
   else
@@ -1778,7 +1849,16 @@ function logoNolifeTimerEvent()
     let p1;
     if (API.getMedia() && API.getMedia().duration > 0)
     {
-      p1 = API.getTimeElapsed() / API.getMedia().duration;
+      let duration;
+      if (skipAtTime != undefined)
+      {
+        duration = skipAtTime;
+      }
+      else
+      {
+        duration = API.getMedia().duration;
+      }
+      p1 = API.getTimeElapsed() / duration;
       if (p1 > 1.0) p1 = 1.0;
     }
     else
@@ -1791,33 +1871,11 @@ function logoNolifeTimerEvent()
       logoNolife = $('<svg id="logo-nolife" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="pointer-events: none; position: absolute; z-index: 10"><g><g><path d="M0,22 A22,22,0,0,1,22,0 L118,0 A62,62,0,0,1,168,25 A62,62,0,0,1,218,0 L271,0 A62,62,0,0,1,312,16 A22,22,0,0,1,333,0 L382,0 A22,22,0,0,1,404,22 L404,100 L440,100 L440,22 A22,22,0,0,1,462,0 L509,0 A22,22,0,0,1,530,15 A62,26,0,0,1,571,0 L635,0 A37,37,0,0,1,661,12 A62,62,0,0,1,697,0 L767,0 A22,22,0,0,1,789,22 L789,61 A22,22,0,0,1,778,81 L778,105 A22,22,0,0,1,789,124 L789,170 L800,227 A22,22,0,0,1,778,250 L62,250 A62,62,0,0,1,0,188 Z M85,185 L84,185 L101,227 L102,227 L774 215 L757,173 Z" /><path d="" /><path d="M22,31 L116,29 A37,37,0,0,1,153,56 L155,160 L112,161 L110,68 A7,7,0,0,0,102,60 L65,62 L68,178 A7,7,0,0,0,75,185 L85,185 L102,227 L61,228 A37,37,0,0,1,24,192 Z M176,65 A37,37,0,0,1,213,28 L269,27 A37,37,0,0,1,306,64 L307,121 A37,37,0,0,1,270,158 L214,159 A37,37,0,0,1,177,122 Z M227,60 A7,7,0,0,0,220,67 L220 120 A7,7,0,0,0,227,127 L256,126 A7,7,0,0,0,263,119 L262,66 A7,7,0,0,0,255,59 Z M332,26 L375,25 L377,117 A7,7,0,0,0,384,124 L438,123 L439,155 L371,156 A37,37,0,0,1,334,119Z M463,24 L503,23 L505,153 L465,154 Z M530,59 A37,37,0,0,1,567,22 L633,21 L634,52 L580,53 A7,7,0,0,0,573,60 L573,71 L623,70 L624,102 L574,103 L575,152 L531,153Z M656,57 A37,37,0,0,1,693,20 L760,19 L761,50 L706,51 A7,7,0,0,0,699,58 L699,69 L749,68 L750,99 L700,100 L700,111 A7,7,0,0,0,707,118 L761,117 L762,149 L694,150 A37,37,0,0,1,657,113 Z" /></g><g transform="scale(3)"><g><path d="M 21.84375,11.28125 C 16.944888,11.386012 13,15.272829 13,21.6875 L 13,61.5 C 13,67.871 18.129,73 24.5,73 l 7.5,0 0,-8.09375 -2.5,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 L 23,26.6875 C 23,23.363033 26.065793,22.616877 28.3125,26 L 45.5,51.90625 C 54.510486,65.474365 67,61.87387 67,48 l 0,-36 -10,0 0,31 c 0,3.835577 -3.236752,4.375503 -5.8125,0.6875 L 33.59375,18.5 c -3.559047,-5.095908 -7.939774,-7.300232 -11.75,-7.21875 z" /><path d=""/><path d="M 84.5,22 C 78.129,22 73,27.129 73,33.5 l 0,14 C 73,53.871 78.129,59 84.5,59 l 29,0 c 6.371,0 11.5,-5.129 11.5,-11.5 l 0,-14 C 125,27.129 119.871,22 113.5,22 l -29,0 z m 5,7.90625 19,0 c 3.601,0 6.5,2.899 6.5,6.5 l 0,8 c 0,3.601 -2.899,6.5 -6.5,6.5 l -19,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 l 0,-8 c 0,-3.601 2.899,-6.5 6.5,-6.5 z"/><path d="m 130.5,22 0,25.5 c 0,6.371 5.129,11.5 11.5,11.5 l 30.5,0 0,-8.09375 -25.5,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 L 140.5,22 l -10,0 z"/><path d="m 178.5,22 0,37 10,0 0,-37 -10,0 z" /><path d="m 207,22 c -6.371,0 -11.5,5.129 -11.5,11.5 l 0,25.5 10,0 0,-15.09375 32,0 0,-7.90625 -31.96875,0 c 0.21277,-3.406022 3.00727,-6.09375 6.46875,-6.09375 l 25.5,0 L 237.5,22 207,22 z" /><path d="m 255,22 c -6.371,0 -11.5,5.129 -11.5,11.5 l 0,14 c 0,6.371 5.129,11.5 11.5,11.5 l 30.5,0 0,-8.09375 -25.5,0 c -3.601,0 -6.5,-2.899 -6.5,-6.5 l 0,-0.5 32,0 0,-7.90625 -31.96875,0 c 0.21277,-3.406022 3.00727,-6.09375 6.46875,-6.09375 l 25.5,0 L 285.5,22 255,22 z" /></g></g></svg>');
       ytFrame.before(logoNolife);
     }
-    let frameWidth = ytFrame.width();
-    let frameHeight = frameWidth * 9 / 16;
-    let left, top;
-    if (frameHeight <= ytFrame.height())
-    {
-      top = frameHeight * 0.07407407 + (ytFrame.height() - frameHeight) / 2;
-      left = frameWidth * 0.09479578;
-    }
-    else
-    {
-      frameHeight = ytFrame.height();
-      frameWidth = frameHeight * 16 / 9;
-      top = frameHeight * 0.07407407;
-      left = frameWidth * 0.09479578 + (ytFrame.width() - frameWidth) / 2;
-    }
-    const width = frameWidth * 0.1281250;
-    const height = width / 3.0;
-    
-    const scale = width / 900.0;
-
-    top += parseFloat(ytFrame.css('top'));
-
-    logoNolife.css('left', Math.floor(left) + 'px').css('top', Math.floor(top) + 'px').attr('width', Math.floor(width)).attr('height', Math.floor(height)).find('g').first().attr('transform', `scale(${scale})`);
-    
+    const width = ytFrame.width() * 225 * 900 / (1920 * 800);
+    logoNolife.css('left', parseFloat(ytFrame.css('left')) + ytFrame.width() * 175 / 1920 + 'px').css('top', parseFloat(ytFrame.css('top')) + ytFrame.height() * 80 / 1080 + 'px').attr('width', Math.floor(width)).attr('height', Math.floor(width / 3.2)).find('g').first().attr('transform', 'scale(' + width / 900 + ')');
     if (logoIndex < logoEdges.length)
     {
-      const g = logoNolife.find('g g').attr("style", "visibility:hidden").first().attr("style", "visibility:visible");
+      const g = logoNolife.find('g g').attr('style', 'visibility:hidden').first().attr('style', 'visibility:visible');
       const path = g.find('path');
       path.first().attr('style', 'fill:' + logoEdges[logoIndex]);
     path.eq(1).attr('d', `M 85,185 L${757 * p1 + 85 * p2},${173 * p1 + 185 * p2} L${774 * p1 + 102 * p2},${215 * p1 + 227 * p2} L102,227 Z`);
@@ -1825,7 +1883,7 @@ function logoNolifeTimerEvent()
   }
   else
   {
-      const g = logoNolife.find('g g').attr("style", "visibility:hidden").last().attr("style", "visibility:visible");
+      const g = logoNolife.find('g g').attr('style', 'visibility:hidden').last().attr('style', 'visibility:visible');
       const path = g.find('path');
       path.filter(index => index < 2).attr('style', 'fill:' + logoOldN[logoIndex - logoEdges.length]);
       path.eq(1).attr('d', `m 31,64.906 0,8.094 ${253.5 * p1},0 0,-8.094 ${-253.5 * p1},0 z`);
