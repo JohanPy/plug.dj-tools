@@ -31,7 +31,7 @@ let resLogoTitles  = ["None", "Japan", "Other", "Video game", "Indies", "Fiction
 
 const logoTags =     ["NLN",        "NLJ",      "NLO",       "NLVG",         "NLIN",      "NLF",       "NLID",      "NLJM",      "NLRG",         "NLC",       "NLRP"];
 
-const version = "1.3.8";
+const version = "1.3.9";
 const logoEdges    = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066",    "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66",    "#A6C19E66", "#96C2D066"];
 const logoLetters  = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6",    "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6",    "#F20A0EE6", "#FFFFFFE6"];
 const logoOldN     = [undefined,   undefined,   "#E8E8E8",   "#7BB5DD",      "#E5D3A3",   "#C1B3C0",   "#E8D3DC",   "#E48889",   "#8ACB87",      undefined,   undefined];
@@ -1762,9 +1762,9 @@ function changeLogo()
 {
   logoNolifeTimerEvent();
   const path = $(".user-logo svg path");
-  path.eq(0).attr('style', 'fill: ' + ((logoIndex < logoEdges.length) ? logoEdges[logoIndex] : '#00000000'));
-  path.eq(1).attr('style', 'fill: ' + ((logoIndex < logoLetters.length) ? logoLetters[logoIndex] : '#00000000'));
-  path.eq(2).attr('style', 'fill: ' + ((logoIndex >= logoEdges.length) ? logoOldN[logoIndex - logoEdges.length] : '#00000000'));
+  path.eq(0).attr("style", "fill: " + ((logoIndex < logoEdges.length) ? logoEdges[logoIndex] : "#00000000"));
+  path.eq(1).attr("style", "fill: " + ((logoIndex < logoLetters.length) ? logoLetters[logoIndex] : "#00000000"));
+  path.eq(2).attr("style", "fill: " + ((logoIndex >= logoEdges.length) ? logoOldN[logoIndex - logoEdges.length] : "#00000000"));
 }
 
 function panelNolifeUpdate()
@@ -1805,8 +1805,14 @@ function panelNolifeUpdate()
     let right;
     if (panelNolifeRight == undefined)
     {
-      right = Math.floor(15 - 10 * (Math.min(518, Math.max(38, Math.max(panelNolife.find(".title-nolife").width(), panelNolife.find(".author-nolife").width()))) - 38) / (518 - 38)) * 25;
-      
+      if (panelNolifeTop)
+      {
+        right = 175;
+      }
+      else
+      {
+        right = 250;
+      }
     }
     else
     {
