@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         plug.dj.tools
 // @namespace    https://github.com/CopperFr/plug.dj-tools/
-// @version      1.4
+// @version      1.4.1
 // @description  Some tools for plug.dj
 // @author       CopperFr
 // @match        https://plug.dj/*
