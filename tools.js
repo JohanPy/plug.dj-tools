@@ -1314,6 +1314,10 @@ function advanceMedia(media) {
   if (media) {
     let title = media.author + "\n" + media.title;
     
+    const comment = /{[^}]*}/g;
+    removeTag(comment)
+    title = title.replace(comment, "");
+
     if (media.author.trim() == "[Nolife]") {
       tempLogoIndex = nextLogoIndex = 0;
     } else {
@@ -1625,9 +1629,14 @@ function panelNolifeUpdate() {
     ytFrame.before(panelNolife);
 
     maxWidth(panelNolife.find("g.big-panel-nolife text.title-nolife"), 1094);
-    maxWidth(panelNolife.find("g.big-panel-nolife text.artist-nolife"), 604);
-    maxWidth(panelNolife.find("g.big-panel-nolife text.lyricists-composers-nolife"), 604);
-    maxWidth(panelNolife.find("g.big-panel-nolife text.label-distributor-nolife"), 1140);
+
+    const artist = panelNolife.find("g.big-panel-nolife text.artist-nolife");
+    const lyricistsComposers = panelNolife.find("g.big-panel-nolife text.lyricists-composers-nolife");
+    if (artist[0].getBoundingClientRect().width + lyricistsComposers[0].getBoundingClientRect().width > 1208) {
+      maxWidth(artist, 604);
+      maxWidth(lyricistsComposers, 604);
+    }
+    maxWidth(panelNolife.find("g.big-panel-nolife text.label-distributor-nolife"), 1084);
     panelNolifeResize();
   }
 }
