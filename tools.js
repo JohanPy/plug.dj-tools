@@ -32,7 +32,7 @@ var plugDJToolsExtensionUninstall = (function () {
   const logoTags = ["NLN", "NLJ", "NLO", "NLVG", "NLIN", "NLF", "NLID", "NLJM", "NLRG", "NLC", "NLRP"];
   const logoClasses = ["", "jm", "o", "vg", "in", "jm", "jm", "jm", "rg", "jm", "in"];
 
-  const version = "1.4.5";
+  const version = "1.4.6";
   const logoEdges = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066", "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66", "#A6C19E66", "#96C2D066"];
   const logoLetters = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6", "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6", "#F20A0EE6", "#FFFFFFE6"];
   const logoOldN = [undefined, undefined, "#E8E8E8", "#7BB5DD", "#E5D3A3", "#C1B3C0", "#E8D3DC", "#E48889", "#8ACB87", undefined, undefined];
@@ -1614,7 +1614,7 @@ var plugDJToolsExtensionUninstall = (function () {
 
       let exp, match;
 
-      exp = /.*(\[AVATARS ?)((classic|base|hiphop|rave|country|rock|80s|2014hw|robot|zoo|warrior|island-t|sea-t|diner-t|beach-t|nyc-t|pixel-t|vintage-t)[0-9][0-9])(\]).*/;
+    exp = /.*(\[AVATARS ?)((classic|base|hiphop|rave|country|rock|80s|2014hw|robot|zoo|warrior|island-[ste]|sea-[ste]|diner-[ste]|beach-[ste]|nyc-[ste]|pixel-[ste]|vintage-[ste]|winter-s|zoo-s|warrior-[es]|hiphop-s|robot-s|dragon-e)[0-1][0-9])(\]).*/;
       match = exp.exec(title);
       if ((match != null) && (match.length == 5)) {
         let tag = match[1] + match[2] + match[4];
@@ -1622,7 +1622,7 @@ var plugDJToolsExtensionUninstall = (function () {
         title = title.replace(tag, "");
       }
 
-      exp = /.*(\[AVATAR ?)((classic|base|hiphop|rave|country|rock|80s|2014hw|robot|zoo|warrior|island-t|sea-t|diner-t|beach-t|nyc-t|pixel-t|vintage-t)[0-9][0-9])(\]).*/;
+    exp = /.*(\[AVATAR ?)((classic|base|hiphop|rave|country|rock|80s|2014hw|robot|zoo|warrior|island-[ste]|sea-[ste]|diner-[ste]|beach-[ste]|nyc-[ste]|pixel-[ste]|vintage-[ste]|winter-s|zoo-s|warrior-[es]|hiphop-s|robot-s|dragon-e)[0-1][0-9])(\]).*/;
       match = exp.exec(title);
       if ((match != null) && (match.length == 5)) {
         let tag = match[1] + match[2] + match[4];
