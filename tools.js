@@ -32,7 +32,7 @@ var plugDJToolsExtensionUninstall = (function () {
   const logoTags = ["NLN", "NLJ", "NLO", "NLVG", "NLIN", "NLF", "NLID", "NLJM", "NLRG", "NLC", "NLRP"];
   const logoClasses = ["", "jm", "o", "vg", "in", "jm", "jm", "jm", "rg", "jm", "in"];
 
-  const version = "1.4.6";
+  const version = "1.4.8";
   const logoEdges = ["#55555566", "#FF6E6E66", "#AAAAAA66", "#96C2D066", "#FBE17066", "#C7A8CA66", "#FDBFFB66", "#FF6E6E66", "#A6C19E66", "#A6C19E66", "#96C2D066"];
   const logoLetters = ["#AAAAAAE6", "#FFFFFFE6", "#FFFFFFE6", "#498BC3E6", "#F2C10CE6", "#946BA8E6", "#FA92F9E6", "#F20A0EE6", "#698F5CE6", "#F20A0EE6", "#FFFFFFE6"];
   const logoOldN = [undefined, undefined, "#E8E8E8", "#7BB5DD", "#E5D3A3", "#C1B3C0", "#E8D3DC", "#E48889", "#8ACB87", undefined, undefined];
@@ -396,7 +396,7 @@ var plugDJToolsExtensionUninstall = (function () {
         if (media && (media.cid == await state0.playback.media.cid)) {
           media.author = await state0.playback.media.author;
           media.title = await state0.playback.media.title;
-          advanceMedia(media);
+          advanceMedia(media, false);
         }
       }
     }
@@ -429,12 +429,12 @@ var plugDJToolsExtensionUninstall = (function () {
     return string.replace(/ā/g, "â").replace(/Ā/g, "Â").replace(/ē/g, "ê").replace(/Ē/g, "Ê").replace(/ī/g, "î").replace(/Ī/g, "Î").replace(/ō/g, "ô").replace(/Ō/g, "Ô").replace(/ū/g, "û").replace(/Ū/g, "Û");
   }
 
-  function replaceArobas(string) {
-    return string.replace(/＠/g, "@");
+  function replaceForbidden(string) {
+    return string.replace(/@/g, "＠").replace(/\//g, "⧸");
   }
 
-  function replaceSlashs(string) {
-    return string.replace(/⧸/g, "/");
+  function restoreForbidden(string) {
+    return string.replace(/＠/g, "@").replace(/⧸/g, "/");
   }
 
   function patchExport(data) {
@@ -442,8 +442,8 @@ var plugDJToolsExtensionUninstall = (function () {
       if ((data.format == 1) && (data.image.endsWith(`//i.ytimg.com/vi/${data.cid}/default.jpg`))) {
         data.image = "";
       }
-      data.title = replaceArobas(replaceSlashs(replaceEntities(data.title)));
-      data.author = replaceArobas(replaceSlashs(replaceEntities(data.author)));
+      data.title = restoreForbidden(replaceEntities(data.title));
+      data.author = restoreForbidden(replaceEntities(data.author));
     });
     return data;
   }
@@ -529,14 +529,10 @@ var plugDJToolsExtensionUninstall = (function () {
         });
         $("#dialog-media-update .dialog-body").append(restore);
 
-        function replace(string) {
-          return string.replace(/＠/g, "@").replace(/⧸/g, "/");
-        }
-
         const author = $("#dialog-media-update input[name=author]");
         const title = $("#dialog-media-update input[name=title]");
-        author.val(replace(author.val()));
-        title.val(replace(title.val()));
+        author.val(restoreForbidden(author.val()));
+        title.val(restoreForbidden(title.val()));
         title.prop("maxlength", "256");
 
         $("#dialog-media-update input[name=author], #dialog-media-update input[name=title]").off("keydown").keydown(function (event) {
@@ -548,20 +544,16 @@ var plugDJToolsExtensionUninstall = (function () {
         });
         $("#dialog-media-update .button.submit").mousedown(function () {
           if (!$("#dialog-media-update").hasClass("no-submit")) {
-            function replace(string) {
-              return string.replace(/@/g, "＠").replace(/\//g, "⧸");
-            }
-
             const author = $("#dialog-media-update input[name=author]");
             const title = $("#dialog-media-update input[name=title]");
-            author.val(replace(author.val()));
-            title.val(replace(title.val()));
+            author.val(replaceForbidden(author.val()));
+            title.val(replaceForbidden(title.val()));
 
             if ((API.getMedia() != undefined) && (media.attributes.cid == API.getMedia().cid) && (API.getDJ() != undefined) && (API.getDJ().id == API.getUser().id)) {
               const media = API.getMedia();
               media.author = author.val();
               media.title = title.val();
-              advanceMedia(media);
+              advanceMedia(media, false);
             }
           }
         });
@@ -947,10 +939,6 @@ var plugDJToolsExtensionUninstall = (function () {
   }
 
   async function synchro(clean) {
-    function replace(string) {
-      return string.replace(/@/g, "＠").replace(/\//g, "⧸");
-    }
-
     const id = getVisiblePlaylist().attributes.id;
     const medias = getCheckedPlaylistMedias().slice(0);
     if (medias.length > 0) {
@@ -976,11 +964,11 @@ var plugDJToolsExtensionUninstall = (function () {
         });
         const data = await mediaTag(cids);
         const updates = await medias.map(media => {
-          const update = data.find(element => element.cid == media.attributes.cid && (replace(element.author) != media.attributes.author || replace(element.title) != media.attributes.title));
+          const update = data.find(element => (element.cid == media.attributes.cid) && (element.author != undefined) && (element.title != undefined) && (replaceForbidden(element.author) != media.attributes.author || replaceForbidden(element.title) != media.attributes.title));
           if (update) return {
             id: media.attributes.id,
-            author: replace(update.author),
-            title: replace(update.title)
+            author: replaceForbidden(update.author),
+            title: replaceForbidden(update.title)
           };
           else return null;
         }).filter(element => element != null);
@@ -1496,8 +1484,11 @@ var plugDJToolsExtensionUninstall = (function () {
     return getPlaylists().find(element => element.attributes.visible == true);
   }
 
+  function getActivePlaylist() {
+    return getPlaylists().find(element => element.attributes.active == true);
+  }
+
   function skipTimerEvent() {
-    console.log("skipTimerEvent");
     const media = API.getMedia();
     if (skipAtLeave) {
       if ((API.getDJ().id != API.getUser().id) || (media == undefined) || (media.id != skipAtId)) {
@@ -1514,7 +1505,6 @@ var plugDJToolsExtensionUninstall = (function () {
       }
     } else if (API.getDJ().id == API.getUser().id) {
       if ((media != undefined) && (media.id == skipAtId)) {
-        console.log("timeElapsed: ", API.getTimeElapsed(), skipAtTime);
         const time = skipAtTime - API.getTimeElapsed();
         if (time <= 0) {
           skipMe();
@@ -1560,10 +1550,14 @@ var plugDJToolsExtensionUninstall = (function () {
   }
 
   function advance() {
-    advanceMedia(API.getMedia());
+    advanceMedia(API.getMedia(), true);
   }
 
-  function advanceMedia(media) {
+  function advanceTimerEvent() {
+    advanceMedia(API.getMedia(), false);
+  }
+
+  function advanceMedia(media, start) {
     panelNolifeArtist = "";
     panelNolifeTitle = "";
     panelNolifeYear = "";
@@ -1614,7 +1608,7 @@ var plugDJToolsExtensionUninstall = (function () {
 
       let exp, match;
 
-    exp = /.*(\[AVATARS ?)((classic|base|hiphop|rave|country|rock|80s|2014hw|robot|zoo|warrior|island-[ste]|sea-[ste]|diner-[ste]|beach-[ste]|nyc-[ste]|pixel-[ste]|vintage-[ste]|winter-s|zoo-s|warrior-[es]|hiphop-s|robot-s|dragon-e)[0-1][0-9])(\]).*/;
+      exp = /.*(\[AVATARS ?)((classic|base|hiphop|rave|country|rock|80s|2014hw|robot|zoo|warrior|island-[ste]|sea-[ste]|diner-[ste]|beach-[ste]|nyc-[ste]|pixel-[ste]|vintage-[ste]|winter-s|zoo-s|warrior-[es]|hiphop-s|robot-s|dragon-e)[0-1][0-9])(\]).*/;
       match = exp.exec(title);
       if ((match != null) && (match.length == 5)) {
         let tag = match[1] + match[2] + match[4];
@@ -1622,7 +1616,7 @@ var plugDJToolsExtensionUninstall = (function () {
         title = title.replace(tag, "");
       }
 
-    exp = /.*(\[AVATAR ?)((classic|base|hiphop|rave|country|rock|80s|2014hw|robot|zoo|warrior|island-[ste]|sea-[ste]|diner-[ste]|beach-[ste]|nyc-[ste]|pixel-[ste]|vintage-[ste]|winter-s|zoo-s|warrior-[es]|hiphop-s|robot-s|dragon-e)[0-1][0-9])(\]).*/;
+      exp = /.*(\[AVATAR ?)((classic|base|hiphop|rave|country|rock|80s|2014hw|robot|zoo|warrior|island-[ste]|sea-[ste]|diner-[ste]|beach-[ste]|nyc-[ste]|pixel-[ste]|vintage-[ste]|winter-s|zoo-s|warrior-[es]|hiphop-s|robot-s|dragon-e)[0-1][0-9])(\]).*/;
       match = exp.exec(title);
       if ((match != null) && (match.length == 5)) {
         let tag = match[1] + match[2] + match[4];
@@ -1694,13 +1688,18 @@ var plugDJToolsExtensionUninstall = (function () {
       }
 
       if (API.getDJ().id == API.getUser().id) {
-        let time = skipAtTime - API.getTimeElapsed();
-        skipAtId = media.id;
-        skipAtLeave = leave;
-        if (time <= 0) {
-          skipTimerEvent();
+        let elapsed = API.getTimeElapsed();
+        if (start && elapsed > 0) {
+
         } else {
-          skipAtTimer = setTimeout(skipTimerEvent, time * 1000);
+          let time = skipAtTime - elapsed;
+          skipAtId = media.id;
+          skipAtLeave = leave;
+          if (time <= 0) {
+            skipTimerEvent();
+          } else {
+            skipAtTimer = setTimeout(skipTimerEvent, time * 1000);
+          }
         }
       }
 
@@ -1759,13 +1758,13 @@ var plugDJToolsExtensionUninstall = (function () {
           let tag = "[" + match[1];
           panelNolifeYear = match[1].trim();
           if (match[2] != undefined) {
-            panelNolifeLyricistsComposers = replaceSlashs(replaceArobas(replaceMacrons(replaceEntities(match[2]))));
+            panelNolifeLyricistsComposers = restoreForbidden(replaceMacrons(replaceEntities(match[2])));
             tag += match[2];
           } else {
             panelNolifeLyricistsComposers = "";
           }
           if (match[5] != undefined) {
-            panelNolifeLabels = replaceSlashs(replaceArobas(replaceMacrons(replaceEntities(match[5].trim()))));
+            panelNolifeLabels = restoreForbidden(replaceMacrons(replaceEntities(match[5].trim())));
             tag += match[5];
           } else {
             panelNolifeLabels = "";
@@ -1773,8 +1772,8 @@ var plugDJToolsExtensionUninstall = (function () {
           tag += "]";
           title = title.replace(tag, "");
         }
-        panelNolifeArtist = replaceSlashs(replaceArobas(replaceMacrons(replaceEntities(title.split("\n")[0])))).trim();
-        panelNolifeTitle = replaceSlashs(replaceArobas(replaceMacrons(replaceEntities(title.split("\n")[1])))).trim();
+        panelNolifeArtist = restoreForbidden(replaceMacrons(replaceEntities(title.split("\n")[0]))).trim();
+        panelNolifeTitle = restoreForbidden(replaceMacrons(replaceEntities(title.split("\n")[1]))).trim();
       }
       updateTitle(title);
     }
@@ -1800,12 +1799,12 @@ var plugDJToolsExtensionUninstall = (function () {
         changeLogo();
       }
     }
-    setTimeout(advance, 1000);
+    setTimeout(advanceTimerEvent, 1000);
   }
 
   function updateTitle(title) {
-    const author = replaceSlashs(replaceArobas(replaceEntities(title.split("\n")[0]))).trim();
-    const text = replaceSlashs(replaceArobas(replaceEntities(title.split("\n")[1]))).trim();
+    const author = restoreForbidden(replaceEntities(title.split("\n")[0])).trim();
+    const text = restoreForbidden(replaceEntities(title.split("\n")[1])).trim();
     $(".community__song-playing").each(function (index, element) {
       const span = $(this).find("span.author").text(author);
       $(this).text(" - " + text);
