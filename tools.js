@@ -96,6 +96,7 @@ var plugDJToolsExtensionUninstall = (function () {
   let panelNolifeDuration2;
 
   let smilId;
+  let requestAnimationFrame;
 
   function language_fr() {
     resCancel = "Annuler";
@@ -160,7 +161,7 @@ var plugDJToolsExtensionUninstall = (function () {
         paths[1].setAttribute("d", `M 85,185 L${757 * p1 + 85 * p2},${173 * p1 + 185 * p2} L${774 * p1 + 102 * p2},${215 * p1 + 227 * p2} L102,227 Z`);
       }
     }
-    smilId = requestAnimationFrame(smil);
+    smilId = requestAnimationFrame(smil, 33);
   }
 
   function visibilityChange() {
@@ -184,10 +185,14 @@ var plugDJToolsExtensionUninstall = (function () {
     API.on(API.ADVANCE, advance);
     $(document).on("keydown", keydownDocument);
 
-    window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-    window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
-
-    requestAnimationFrame(smil);
+    if (window.ApplePaySession) {
+      requestAnimationFrame = window.setTimeout;
+      cancelAnimationFrame = window.clearTimeout;
+    } else {
+      requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+      cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+    }
+    smilId = requestAnimationFrame(smil, 33);
 
     if ((typeof InstallTrigger == "object") && (typeof document.hidden == "boolean")) {
       document.addEventListener("visibilitychange", visibilityChange, false);
@@ -1962,7 +1967,7 @@ var plugDJToolsExtensionUninstall = (function () {
 
   let uninstall = function () {
     if (smilId != undefined) {
-      window.cancelAnimationFrame(smilId);
+      cancelAnimationFrame(smilId);
       smilId = undefined;
     }
     console.log(`Uninstalling plug.dj tools v${version}...`);
